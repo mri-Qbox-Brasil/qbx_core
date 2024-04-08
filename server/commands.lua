@@ -204,7 +204,9 @@ lib.addCommand('givemoney', {
         Notify(source, locale('error.not_online'), 'error')
         return
     end
-    player.Functions.AddMoney(tostring(args[locale('command.givemoney.params.moneytype.name')]), tonumber(args[locale('command.givemoney.params.amount.name')]) --[[@as number]])
+
+    -- pefcl logs: alteração feita por mim discord: .mur4i
+    player.Functions.AddMoney(tostring(args[locale('command.givemoney.params.moneytype.name')]), tonumber(args[locale('command.givemoney.params.amount.name')]) --[[@as number]], "Prefeitura")
 end)
 
 lib.addCommand('setmoney', {

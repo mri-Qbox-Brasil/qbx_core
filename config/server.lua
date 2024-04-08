@@ -6,7 +6,7 @@ return {
         ---@alias Money {cash: number, bank: number, crypto: number}
         ---@type Money
         moneyTypes = { cash = 500, bank = 5000, crypto = 0 }, -- type = startamount - Add or remove money types for your server (for ex. blackmoney = 0), remember once added it will not be removed from the database!
-        dontAllowMinus = { 'cash', 'crypto' }, -- Money that is not allowed going in minus
+        dontAllowMinus = { 'cash', 'crypto', 'bank' }, -- Money that is not allowed going in minus
         paycheckTimeout = 10, -- The time in minutes that it will give the paycheck
         paycheckSociety = false -- If true paycheck will come from the society account that the player is employed at, requires qb-management
     },
@@ -79,7 +79,7 @@ return {
     server = {
         pvp = true, -- Enable or disable pvp on the server (Ability to shoot other players)
         closed = false, -- Set server closed (no one can join except people with ace permission 'qbadmin.join')
-        closedReason = 'Server Closed', -- Reason message to display when people can't join the server
+        closedReason = 'Servidor em Manutenção', -- Reason message to display when people can't join the server
         whitelist = false, -- Enable or disable whitelist on the server
         whitelistPermission = 'admin', -- Permission that's able to enter the server when the whitelist is on
         discord = '', -- Discord invite link
@@ -132,10 +132,10 @@ return {
     end,
 
     getSocietyAccount = function(accountName)
-        return exports['Renewed-Banking']:getAccountMoney(accountName)
+        return exports.qbx_management:GetAccount(accountName)
     end,
-
+   
     removeSocietyMoney = function(accountName, payment)
-        return exports['Renewed-Banking']:removeAccountMoney(accountName, payment)
-    end,
+        return exports.qbx_management:RemoveMoney(accountName, payment)
+    end
 }

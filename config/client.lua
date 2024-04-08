@@ -1,8 +1,8 @@
 return {
     statusIntervalSeconds = 5, -- how often to check hunger/thirst status to remove health if 0.
-    loadingModelsTimeout = 10000, -- Waiting time for ox_lib to load the models before throws an error, for low specs pc
+    loadingModelsTimeout = 20000, -- Waiting time for ox_lib to load the models before throws an error, for low specs pc
 
-    pauseMapText = 'Powered by Qbox', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
+    pauseMapText = 'mri_Qbox BRASIL', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
 
     characters = {
         useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
