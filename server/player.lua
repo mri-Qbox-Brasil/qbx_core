@@ -351,7 +351,7 @@ function CheckPlayerData(source, playerData)
         playerState:set('thirst', playerData.metadata.thirst, true)
         playerState:set('stress', playerData.metadata.stress, true)
     end
-    
+
     playerData.metadata.isdead = playerData.metadata.isdead or false
     playerData.metadata.inlaststand = playerData.metadata.inlaststand or false
     playerData.metadata.armor = playerData.metadata.armor or 0
@@ -454,9 +454,6 @@ function Logout(source)
     QBX.Players[source] = nil
     GlobalState.PlayerCount -= 1
     TriggerClientEvent('qbx_core:client:playerLoggedOut', source)
-    playerState:set('stress', 100, true)
-    playerState:set('thirst', 100, true)
-    playerState:set('hunger', 100, true)
 end
 
 exports('Logout', Logout)
@@ -542,7 +539,7 @@ function CreatePlayer(playerData, Offline)
             return false
         end
         if setGangReplaces then
-        removePlayerFromGang(self.PlayerData.citizenid, self.PlayerData.gang.name)
+            removePlayerFromGang(self.PlayerData.citizenid, self.PlayerData.gang.name)
         end
         AddPlayerToGang(self.PlayerData.citizenid, gangName, grade)
         setPlayerPrimaryGang(self.PlayerData.citizenid, gangName)
@@ -602,20 +599,12 @@ function CreatePlayer(playerData, Offline)
     ---@param amount number
     ---@param reason? string
     ---@return boolean success if money was added
-    function self.Functions.AddMoney(moneytype, amount, reason) -- pefcl
-        reason = reason or 'Desconhecido'
-        moneytype = moneytype:lower()
-        amount = tonumber(amount)
-        if amount < 0 then return end
-        if moneytype == 'bank' then
-            local data = {}
-            data.amount = amount
-            data.message = reason
-            exports.pefcl:addBankBalance(self.PlayerData.source, data)
-        else
-            if not self.PlayerData.money[moneytype] then return false end
-            self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] + amount
-        end
+    function self.Functions.AddMoney(moneytype, amount, reason)
+        reason = reason or 'unknown'
+        amount = qbx.math.round(tonumber(amount) --[[@as number]])
+        if amount < 0 then return false end
+        if not self.PlayerData.money[moneytype] then return false end
+        self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] + amount
 
         if not self.Offline then
             self.Functions.UpdatePlayerData()
@@ -634,38 +623,26 @@ function CreatePlayer(playerData, Offline)
         end
 
         return true
-  end
+    end
 
     ---@param moneytype MoneyType
     ---@param amount number
     ---@param reason? string
     ---@return boolean success if money was removed
-    function self.Functions.RemoveMoney(moneytype, amount, reason) -- pefcl
-        reason = reason or 'Desconhecido'
-        moneytype = moneytype:lower()
-        amount = tonumber(amount)
-        if amount < 0 then return end
+    function self.Functions.RemoveMoney(moneytype, amount, reason)
+        reason = reason or 'unknown'
+        amount = qbx.math.round(tonumber(amount) --[[@as number]])
+        if amount < 0 then return false end
         if not self.PlayerData.money[moneytype] then return false end
-        for _, mtype in pairs(QBCore.Config.Money.DontAllowMinus) do
+        for _, mtype in pairs(config.money.dontAllowMinus) do
             if mtype == moneytype then
                 if (self.PlayerData.money[moneytype] - amount) < 0 then
                     return false
                 end
             end
-            if moneytype == 'bank' then
-                if (exports.pefcl:getDefaultAccountBalance(self.PlayerData.source).data - amount) < 0 then
-                    return false
-                end
-            end
         end
-        if moneytype == 'bank' then
-            local data = {}
-            data.amount = amount
-            data.message = reason
-            exports.pefcl:removeBankBalance(self.PlayerData.source, data)
-        else
-            self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] - amount
-        end
+        self.PlayerData.money[moneytype] = self.PlayerData.money[moneytype] - amount
+
         if not self.Offline then
             self.Functions.UpdatePlayerData()
             local tags = amount > 100000 and config.logging.role or nil
@@ -686,28 +663,19 @@ function CreatePlayer(playerData, Offline)
         end
 
         return true
-      end
+    end
 
     ---@param moneytype MoneyType
     ---@param amount number
     ---@param reason? string
     ---@return boolean success if money was set
-    function self.Functions.SetMoney(moneytype, amount, reason) --pefcl
-        reason = reason or 'Desconhecido'
-        moneytype = moneytype:lower()
-        amount = tonumber(amount)
+    function self.Functions.SetMoney(moneytype, amount, reason)
+        reason = reason or 'unknown'
+        amount = qbx.math.round(tonumber(amount) --[[@as number]])
         if amount < 0 then return false end
+        if not self.PlayerData.money[moneytype] then return false end
         local difference = amount - self.PlayerData.money[moneytype]
-        if moneytype == 'bank' then
-            local data = {}
-            data.amount = amount
-            exports.pefcl:setBankBalance(self.PlayerData.source, data)
-            self.PlayerData.money[moneytype] = exports.pefcl:getDefaultAccountBalance(self.PlayerData.source).data or 0
-        else
-            if not self.PlayerData.money[moneytype] then return false end
-            
-            self.PlayerData.money[moneytype] = amount
-        end
+        self.PlayerData.money[moneytype] = amount
 
         if not self.Offline then
             self.Functions.UpdatePlayerData()
@@ -728,13 +696,8 @@ function CreatePlayer(playerData, Offline)
 
     ---@param moneytype MoneyType
     ---@return boolean | number amount or false if moneytype does not exist
-    function self.Functions.GetMoney(moneytype) --pefcl
+    function self.Functions.GetMoney(moneytype)
         if not moneytype then return false end
-        moneytype = moneytype:lower()
-        if moneytype == 'bank' then
-            self.PlayerData.money[moneytype] = exports.pefcl:getDefaultAccountBalance(self.PlayerData.source).data or 0
-            return exports.pefcl:getDefaultAccountBalance(self.PlayerData.source).data
-        end
         return self.PlayerData.money[moneytype]
     end
 
@@ -756,15 +719,6 @@ function CreatePlayer(playerData, Offline)
     function self.Functions.Logout()
         if self.Offline then return end -- Unsupported for Offline Players
         Logout(self.PlayerData.source)
-    end
-
-    --- pefcl by .mur4i
-    function self.Functions.SyncMoney() 
-        local money = exports.pefcl:getDefaultAccountBalance(self.PlayerData.source).data
-        self.PlayerData.money['bank'] = money
-        if not self.Offline then
-            self.Functions.UpdatePlayerData()
-        end
     end
 
     AddEventHandler('qbx_core:server:onJobUpdate', function(jobName, job)
