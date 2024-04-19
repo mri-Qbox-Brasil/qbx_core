@@ -122,11 +122,11 @@ local function characterDialog()
             required = true,
             icon = 'calendar-days',
             label = locale('info.birth_date'),
-            format = 'YYYY-MM-DD',
+            format = 'DD-MM-YYYY',
             returnString = true,
-            min = '1900-01-01', -- Has to be in the same in the same format as the format argument
-            max = '2006-12-31', -- Has to be in the same in the same format as the format argument
-            default = '2006-12-31'
+            min = '01-01-1900', -- Has to be in the same in the same format as the format argument
+            max = '12-31-2006', -- Has to be in the same in the same format as the format argument
+            default = '12-31-2006'
         }
     })
 end
