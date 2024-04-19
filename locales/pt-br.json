@@ -56,9 +56,9 @@
         "first_name": "Primeiro Nome",
         "last_name": "Sobrenome",
         "nationality": "Nacionalidade",
-        "gender": "Sexo",
+        "gender": "Gênero",
         "birth_date": "Data de Nascimento",
-        "select_gender": "Selecione seu sexo...",
+        "select_gender": "Selecionar gênero",
         "confirm_delete": "Tem certeza de que deseja excluir este personagem?",
         "in_queue": "🐌 Você está %s/%s na fila. (%s) %s"
     },

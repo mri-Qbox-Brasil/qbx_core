@@ -86,28 +86,36 @@ local function characterDialog()
             required = true,
             icon = 'user-pen',
             label = locale('info.first_name'),
-            placeholder = 'Hank'
+            placeholder = 'Murai'
         },
         {
             type = 'input',
             required = true,
             icon = 'user-pen',
             label = locale('info.last_name'),
-            placeholder = 'Jordan'
+            placeholder = 'Dev'
         },
         {
-            type = 'input',
+            type = 'select',
             required = true,
             icon = 'user-shield',
             label = locale('info.nationality'),
-            placeholder = 'Duck'
+            placeholder = '',
+            options = {
+                {
+                    value = "Brasil"
+                },
+                {
+                    value = "Portugal"
+                }
+            }
         },
         {
             type = 'select',
             required = true,
             icon = 'circle-user',
             label = locale('info.gender'),
-            placeholder = locale('info.select_gender'),
+            placeholder = locale('Selecionar nacionalidade'),
             options = {
                 {
                     value = locale('info.char_male')
