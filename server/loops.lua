@@ -23,8 +23,8 @@ CreateThread(function()
     end
 end)
 
-local function sendPaycheck(player, payment)
-    player.Functions.AddMoney('bank', payment)
+local function sendPaycheck(player, payment, reason) -- pefcl
+    player.Functions.AddMoney('bank', payment, reason)
     Notify(player.PlayerData.source, locale('info.received_paycheck', payment))
 end
 
@@ -34,7 +34,7 @@ local function pay(player)
     if payment <= 0 then return end
     if not GetJob(job.name).offDutyPay and not job.onduty then return end
     if not config.money.paycheckSociety then
-        sendPaycheck(player, payment)
+        sendPaycheck(player, payment, "Salário recebido de: ["..job.name.."]")
         return
     end
     local account = config.getSocietyAccount(job.name)
