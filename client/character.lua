@@ -19,45 +19,87 @@ local randomPedModels = {
     `a_m_m_hillbilly_02`,
 }
 
-local function setupPreviewCam()
-    DoScreenFadeIn(1000)
-    SetTimecycleModifier('hud_def_blur')
+local ScenarioType = {
+    'WORLD_HUMAN_SMOKING_POT',
+    'WORLD_HUMAN_MUSICIAN',
+    'WORLD_HUMAN_COP_IDLES',
+    'WORLD_HUMAN_CHEERING',
+    'WORLD_HUMAN_TOURIST_MAP',
+    -- 'WORLD_HUMAN_HAMMERING',
+    'WORLD_HUMAN_PUSH_UPS',
+    'WORLD_HUMAN_PARTYING',
+    'WORLD_HUMAN_PICNIC',
+    'WORLD_HUMAN_SIT_UPS',
+    -- 'WORLD_HUMAN_TENNIS_PLAYER',
+    'WORLD_HUMAN_DRINKING',
+    -- 'WORLD_HUMAN_BINOCULARS',
+    'WORLD_HUMAN_HANG_OUT_STREET',
+    -- 'WORLD_HUMAN_PAPARAZZI',
+    -- 'WORLD_HUMAN_TOURIST_MOBILE',
+    'WORLD_HUMAN_VALET',
+    'WORLD_HUMAN_STAND_IMPATIENT_CLUBHOUSE',
+    -- 'WORLD_HUMAN_MUSCLE_FREE_WEIGHTS'
+}
+local camera = nil
+
+function setupPreviewCam()
+    -- SetTimecycleModifier('hud_def_blur')
     SetTimecycleModifierStrength(1.0)
     FreezeEntityPosition(cache.ped, false)
-    -- previewCam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', randomLocation.camCoords.x, randomLocation.camCoords.y, randomLocation.camCoords.z, -6.0, 0.0, randomLocation.camCoords.w, 40.0, false, 0)
-    previewCam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', randomLocation.camCoords[1], randomLocation.camCoords[2], randomLocation.camCoords[3], randomLocation.camCoords[4], randomLocation.camCoords[5], randomLocation.camCoords[6], randomLocation.camCoords[7], false, 0)
-    SetCamActive(previewCam, true)
-    SetCamUseShallowDofMode(previewCam, true)
-    SetCamNearDof(previewCam, 0.4)
-    SetCamFarDof(previewCam, 1.8)
-    SetCamDofStrength(previewCam, 0.7)
-    RenderScriptCams(true, false, 1, true, true)
+    TaskStartScenarioInPlace(cache.ped, ScenarioType[math.random(1,#ScenarioType)], 0, true)
+    local coords = GetOffsetFromEntityInWorldCoords(cache.ped, 0, 1.6, 0)
+    camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+    SetCamActive(camera, true)
+    RenderScriptCams(true, true, 1250, 1, 0)
+    SetCamCoord(camera, coords.x, coords.y, coords.z + 0.65)
+    SetCamFov(camera, 38.0)
+    SetCamRot(camera, 0.0, 0.0, GetEntityHeading(cache.ped) + 180)
+    PointCamAtPedBone(camera, cache.ped, 31086, 0.0 - 0.4, 0.0, 0.03, 1)
+    local camCoords = GetCamCoord(camera)
+    TaskLookAtCoord(cache.ped, camCoords.x, camCoords.y, camCoords.z, 5000, 1, 1)
+    SetCamUseShallowDofMode(camera, true)
+    SetCamNearDof(camera, 1.2)
+    SetCamFarDof(camera, 12.0)
+    SetCamDofStrength(camera, 1.0)
+    SetCamDofMaxNearInFocusDistance(camera, 1.0)
+    Citizen.Wait(500)
+
+    DoScreenFadeIn(1000)
     CreateThread(function()
-        while DoesCamExist(previewCam) do
+        while DoesCamExist(camera) do
             SetUseHiDof()
             Wait(0)
         end
     end)
 end
 
-local function destroyPreviewCam()
-    if not previewCam then return end
+function destroyPreviewCam()
+    if not camera then return end
 
     SetTimecycleModifier('default')
-    SetCamActive(previewCam, false)
-    DestroyCam(previewCam, true)
-    RenderScriptCams(false, false, 1, true, true)
+    RenderScriptCams(false, true, 1250, 1, 0)
+    DestroyCam(camera, false)
+    camera = nil
+    ClearPedTasks(PlayerPedId())
     FreezeEntityPosition(cache.ped, false)
 end
 
 ---@param citizenId? string
 local function previewPed(citizenId)
+
     if not citizenId then
         local model = randomPedModels[math.random(1, #randomPedModels)]
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
+
+        destroyPreviewCam()
+        Citizen.Wait(100)
+        setupPreviewCam()
         return
     end
+
+    DoScreenFadeOut(500)
+    Citizen.Wait(500)
 
     local clothing, model = lib.callback.await('qbx_core:server:getPreviewPedData', false, citizenId)
     if model and clothing then
@@ -69,6 +111,10 @@ local function previewPed(citizenId)
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
     end
+
+    destroyPreviewCam()
+    Citizen.Wait(100)
+    setupPreviewCam()
 end
 
 ---@class CharacterRegistration
@@ -222,7 +268,7 @@ end
 ---@param cid integer
 ---@return boolean
 local function createCharacter(cid)
-    previewPed()
+    -- previewPed()
 
     :: noMatch ::
 

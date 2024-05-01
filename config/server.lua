@@ -30,7 +30,7 @@ return {
             },
             AccountNumber = {
                 valueFunction = function()
-                    return 'US0' .. math.random(1, 9) .. 'QBX' .. math.random(1111, 9999) .. math.random(1111, 9999) .. math.random(11, 99)
+                    return 'BRL' .. math.random(1, 9) .. 'MRI' .. math.random(1111, 9999) .. math.random(1111, 9999) .. math.random(11, 99)
                 end,
             },
             PhoneNumber = {
@@ -45,7 +45,7 @@ return {
             },
             WalletId = {
                 valueFunction = function()
-                    return 'QB-' .. math.random(11111111, 99999999)
+                    return 'MRI-' .. math.random(11111111, 99999999)
                 end,
             },
             SerialNumber = {
@@ -128,7 +128,8 @@ return {
     },
 
     giveVehicleKeys = function(src, plate, vehicle)
-        return exports.qbx_vehiclekeys:GiveKeys(src, plate)
+        return exports.mm_carkeys:GiveTempKeys(src, plate)
+        -- return exports.qbx_vehiclekeys:GiveKeys(src, plate)
     end,
 
     getSocietyAccount = function(accountName)

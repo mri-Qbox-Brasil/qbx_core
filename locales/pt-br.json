@@ -31,8 +31,8 @@
     },
     "info": {
         "received_paycheck": "Você recebeu seu salário de %s€",
-        "job_info": "Emprego: %s | Grau: %s | Serviço: %s",
-        "gang_info": "Gangue: %s | Grau: %s",
+        "job_info": "Emprego: %s | Cargo: %s | Serviço: %s",
+        "gang_info": "Gangue: %s | Cargo: %s",
         "on_duty": "Você agora está de serviço!",
         "off_duty": "Você agora está de folga!",
         "checking_ban": "Olá %s. Estamos verificando se você foi banido.",

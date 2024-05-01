@@ -7,7 +7,7 @@ return {
     characters = {
         useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
         enableDeleteButton = true, -- Whether players should be able to delete characters themselves.
-        startingApartment = true, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
+        startingApartment = false, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
 
         profanityWords = {
             ['bad word'] = true
@@ -15,9 +15,8 @@ return {
 
         locations = { -- Spawn locations for multichar, these are chosen randomly
             {
-                pedCoords = vec4(657.25, 1078.3, 283.0, 154.14),
-                camCoords = {656.0, 1076.0, 283.0, 11.0, 0.0, -27.0, 45.0},
-                -- CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", 656.0, 1076.0, 283.0, 11.0, 0.0, -27.0, 45.0, true, 2)
+                pedCoords = vec4(-2169.26, 5181.4, 15.72, 184.28),
+                -- camCoords = {656.0, 1076.0, 283.0, 11.0, 0.0, -27.0, 45.0},
             },
             -- {
             --     pedCoords = vec4(1104.49, 195.9, -49.44, 44.22),
@@ -70,7 +69,8 @@ return {
     },
 
     --- Only used by QB bridge
-    hasKeys = function()
-        return exports.qbx_vehiclekeys:HasKeys()
+    hasKeys = function(plate)
+        return exports.mm_carkeys:HaveTemporaryKey(plate) or exports.mm_carkeys:HavePermanentKey(plate)
+        -- return exports.qbx_vehiclekeys:HasKeys()
     end,
 }
