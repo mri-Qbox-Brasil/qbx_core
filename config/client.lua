@@ -70,7 +70,7 @@ return {
 
     --- Only used by QB bridge
     hasKeys = function(plate)
-        return exports.mm_carkeys:HaveTemporaryKey(plate) or exports.mm_carkeys:HavePermanentKey(plate)
+        return exports.mri_Qcarkeys:HaveTemporaryKey(plate) or exports.mri_Qcarkeys:HavePermanentKey(plate)
         -- return exports.qbx_vehiclekeys:HasKeys()
     end,
 }

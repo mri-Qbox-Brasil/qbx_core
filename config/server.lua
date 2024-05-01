@@ -128,7 +128,7 @@ return {
     },
 
     giveVehicleKeys = function(src, plate, vehicle)
-        return exports.mm_carkeys:GiveTempKeys(src, plate)
+        return exports.mri_Qcarkeys:GiveTempKeys(src, plate)
         -- return exports.qbx_vehiclekeys:GiveKeys(src, plate)
     end,
 
