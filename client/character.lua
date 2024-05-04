@@ -321,8 +321,8 @@ local function chooseCharacter()
 
     FreezeEntityPosition(cache.ped, true)
     Wait(1000)
-    
-    RequestCollisionAtCoord( randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z)
+
+    RequestCollisionAtCoord(randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z)
     while not HasCollisionLoadedAroundEntity(cache.ped) do Wait(0) end
 
     SetEntityCoords(cache.ped, randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z, false, false, false, false)
