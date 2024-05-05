@@ -1,7 +1,7 @@
 ---@type table<string, Job>
 return {
 	['unemployed'] = {
-		label = 'Civilian',
+		label = 'Civil',
 		defaultDuty = true,
 		offDutyPay = false,
 		grades = {

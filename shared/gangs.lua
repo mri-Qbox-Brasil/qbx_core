@@ -1,10 +1,10 @@
 ---@type table<string, Gang>
 return {
 	['none'] = {
-		label = 'No Gang',
+		label = 'Sem gangue',
 		grades = {
             [0] = {
-                name = 'Unaffiliated'
+                name = 'Sem cargo'
             },
         },
 	},
