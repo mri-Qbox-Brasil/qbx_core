@@ -31,7 +31,7 @@
     },
     "info": {
         "received_paycheck": "Você recebeu seu salário de %s€",
-        "job_info": "Emprego: %s | Cargo: %s | Serviço: %s",
+        "job_info": "Emprego: %s | Cargo: %s | Em serviço: %s",
         "gang_info": "Gangue: %s | Cargo: %s",
         "on_duty": "Você agora está de serviço!",
         "off_duty": "Você agora está de folga!",

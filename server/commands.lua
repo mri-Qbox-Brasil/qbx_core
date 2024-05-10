@@ -230,8 +230,10 @@ end)
 lib.addCommand('job', {
     help = locale('command.job.help')
 }, function(source)
+    local onduty = 'Não'
     local PlayerJob = GetPlayer(source).PlayerData.job
-    Notify(source, locale('info.job_info', PlayerJob?.label, PlayerJob?.grade.name, PlayerJob?.onduty))
+    if PlayerJob.onduty then onduty = 'Sim' end
+    Notify(source, locale('info.job_info', PlayerJob?.label, PlayerJob?.grade.name, onduty))
 end)
 
 lib.addCommand('setjob', {
