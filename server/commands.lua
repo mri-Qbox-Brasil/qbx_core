@@ -172,6 +172,16 @@ lib.addCommand('dv', {
     local pedCars = {GetVehiclePedIsIn(ped, false)}
     local radius = args[locale('command.dv.params.radius.name')]
 
+    local function isVehicleOwned(plate)
+        local count = MySQL.scalar.await('SELECT count(*) from player_vehicles WHERE plate = ?', {plate})
+        local update = MySQL.update.await("UPDATE player_vehicles SET state = ? WHERE plate = ? OR fakeplate = ?", {1, plate, plate})
+
+        if count > 0 then
+            if update > 0 then return true end
+        end
+        return true
+    end
+
     if pedCars[1] == 0 or radius then -- Only execute when player is not in a vehicle or radius is explicitly defined
         pedCars = lib.callback.await('qbx_core:client:getVehiclesInRadius', source, radius)
     else
@@ -182,6 +192,7 @@ lib.addCommand('dv', {
         for i = 1, #pedCars do
             local pedCar = NetworkGetEntityFromNetworkId(pedCars[i])
             if pedCar and DoesEntityExist(pedCar) then
+                isVehicleOwned(GetVehicleNumberPlateText(pedCar))
                 DeleteEntity(pedCar)
             end
         end
