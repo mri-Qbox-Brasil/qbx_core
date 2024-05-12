@@ -3,7 +3,7 @@ local functions = {}
 
 -- Player
 
----@deprecated import PlayerData using module 'qbx_core:playerdata' https://qbox-docs.vercel.app/resources/core/import
+---@deprecated import PlayerData using module 'qbx_core:playerdata' https://docs.qbox.re/resources/qbx_core/modules/playerdata
 ---@param cb? fun(playerData: PlayerData)
 ---@return PlayerData? playerData
 function functions.GetPlayerData(cb)
@@ -65,9 +65,7 @@ functions.RequestAnimDict = lib.requestAnimDict
 functions.PlayAnim = function(animDict, animName, upperbodyOnly, duration)
     local flags = upperbodyOnly and 16 or 0
     local runTime = duration or -1
-    lib.requestAnimDict(animDict)
-    TaskPlayAnim(cache.ped, animDict, animName, 8.0, 3.0, runTime, flags, 0.0, false, false, true)
-    RemoveAnimDict(animDict)
+    lib.playAnim(cache.ped, animDict, animName, 8.0, 3.0, runTime, flags, 0.0, false, false, true)
 end
 
 ---@deprecated use lib.requestModel from ox_lib
@@ -419,10 +417,7 @@ function functions.SetVehicleProperties(vehicle, props)
     props.modRoofLivery = props.modRoofLivery or props.liveryRoof
 
     --- lib.setVehicleProperties copied and pasted from Overextended below so that we can remove the error so that setting properties is best effort
-    if not DoesEntityExist(vehicle) then
-        error(('Unable to set vehicle properties for "%s" (entity does not exist)'):
-        format(vehicle))
-    end
+    assert(DoesEntityExist(vehicle), string.format('Unable to set vehicle properties for "%s" (entity does not exist)', vehicle))
 
     if NetworkGetEntityIsNetworked(vehicle) and NetworkGetEntityOwner(vehicle) ~= cache.playerId then
         lib.print.warn('setting vehicle properties on non entity owner client. This may cause certain properties to fail to set. entity:', vehicle)

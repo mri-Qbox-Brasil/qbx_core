@@ -56,25 +56,31 @@ return {
         }
     },
 
-
     ---@alias TableName string
     ---@alias ColumnName string
-    ---@type table<TableName, ColumnName>
+    ---@type [TableName, ColumnName][]
     characterDataTables = {
-        players = 'citizenid',
-        apartments = 'citizenid',
-        bank_accounts_new = 'id',
-        --crypto_transactions = 'citizenid',
-        --phone_invoices = 'citizenid',
-        --phone_messages = 'citizenid',
-        playerskins = 'citizenid',
-        --player_contacts = 'citizenid',
-        player_houses = 'citizenid',
-        player_mails = 'citizenid',
-        player_outfits = 'citizenid',
-        player_vehicles = 'citizenid',
+        {'properties', 'owner'},
+        {'apartments', 'citizenid'},
+        {'bank_accounts_new', 'id'},
+        {'crypto_transactions', 'citizenid'},
+        {'phone_invoices', 'citizenid'},
+        {'phone_messages', 'citizenid'},
+        {'playerskins', 'citizenid'},
+        {'player_contacts', 'citizenid'},
+        {'player_houses', 'citizenid'},
+        {'player_mails', 'citizenid'},
+        {'player_outfits', 'citizenid'},
+        {'player_vehicles', 'citizenid'},
+        {'players', 'citizenid'},
+        {'npwd_calls', 'identifier'},
+        {'npwd_darkchat_channel_members', 'user_identifier'},
+        {'npwd_marketplace_listings', 'identifier'},
+        {'npwd_messages_participants', 'participant'},
+        {'npwd_notes', 'identifier'},
+        {'npwd_phone_contacts', 'identifier'},
+        {'npwd_phone_gallery', 'identifier'},
     }, -- Rows to be deleted when the character is deleted
-
 
     server = {
         pvp = true, -- Enable or disable pvp on the server (Ability to shoot other players)
@@ -100,16 +106,12 @@ return {
     starterItems = { -- Character starting items
         { name = 'phone', amount = 1 },
         { name = 'id_card', amount = 1, metadata = function(source)
-                if GetResourceState('qbx_idcard') ~= 'started' then
-                    error('qbx_idcard resource not found. Required to give an id_card as a starting item')
-                end
+                assert(GetResourceState('qbx_idcard') == 'started', 'qbx_idcard resource not found. Required to give an id_card as a starting item')
                 return exports.qbx_idcard:GetMetaLicense(source, {'id_card'})
             end
         },
         { name = 'driver_license', amount = 1, metadata = function(source)
-                if GetResourceState('qbx_idcard') ~= 'started' then
-                    error('qbx_idcard resource not found. Required to give an id_card as a starting item')
-                end
+                assert(GetResourceState('qbx_idcard') == 'started', 'qbx_idcard resource not found. Required to give an id_card as a starting item')
                 return exports.qbx_idcard:GetMetaLicense(source, {'driver_license'})
             end
         },
@@ -135,7 +137,7 @@ return {
     getSocietyAccount = function(accountName)
         return exports.qbx_management:GetAccount(accountName)
     end,
-   
+
     removeSocietyMoney = function(accountName, payment)
         return exports.qbx_management:RemoveMoney(accountName, payment)
     end
