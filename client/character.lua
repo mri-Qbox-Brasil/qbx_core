@@ -112,20 +112,52 @@ if config.characters.limitNationalities then
     end)
 end
 
+local ScenarioType = {
+    'WORLD_HUMAN_SMOKING_POT',
+    'WORLD_HUMAN_MUSICIAN',
+    'WORLD_HUMAN_COP_IDLES',
+    -- 'WORLD_HUMAN_CHEERING',
+    'WORLD_HUMAN_TOURIST_MAP',
+    -- 'WORLD_HUMAN_HAMMERING',
+    'WORLD_HUMAN_PUSH_UPS',
+    -- 'WORLD_HUMAN_PARTYING',
+    'WORLD_HUMAN_PICNIC',
+    'WORLD_HUMAN_SIT_UPS',
+    -- 'WORLD_HUMAN_TENNIS_PLAYER',
+    'WORLD_HUMAN_DRINKING',
+    -- 'WORLD_HUMAN_BINOCULARS',
+    'WORLD_HUMAN_HANG_OUT_STREET',
+    -- 'WORLD_HUMAN_PAPARAZZI',
+    -- 'WORLD_HUMAN_TOURIST_MOBILE',
+    -- 'WORLD_HUMAN_VALET',
+    -- 'WORLD_HUMAN_STAND_IMPATIENT_CLUBHOUSE',
+    -- 'WORLD_HUMAN_MUSCLE_FREE_WEIGHTS'
+}
+local camera = nil
 local function setupPreviewCam()
-    DoScreenFadeIn(1000)
-    SetTimecycleModifier('hud_def_blur')
     SetTimecycleModifierStrength(1.0)
     FreezeEntityPosition(cache.ped, false)
-    previewCam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', randomLocation.camCoords.x, randomLocation.camCoords.y, randomLocation.camCoords.z, -6.0, 0.0, randomLocation.camCoords.w, 40.0, false, 0)
-    SetCamActive(previewCam, true)
-    SetCamUseShallowDofMode(previewCam, true)
-    SetCamNearDof(previewCam, 0.4)
-    SetCamFarDof(previewCam, 1.8)
-    SetCamDofStrength(previewCam, 0.7)
-    RenderScriptCams(true, false, 1, true, true)
+    TaskStartScenarioInPlace(cache.ped, ScenarioType[math.random(1,#ScenarioType)], 0, true)
+    local coords = GetOffsetFromEntityInWorldCoords(cache.ped, 0, 1.6, 0)
+    camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+    SetCamActive(camera, true)
+    RenderScriptCams(true, true, 1250, 1, 0)
+    SetCamCoord(camera, coords.x, coords.y, coords.z + 0.65)
+    SetCamFov(camera, 38.0)
+    SetCamRot(camera, 0.0, 0.0, GetEntityHeading(cache.ped) + 180)
+    PointCamAtPedBone(camera, cache.ped, 31086, 0.0 - 0.4, 0.0, 0.03, 1)
+    local camCoords = GetCamCoord(camera)
+    TaskLookAtCoord(cache.ped, camCoords.x, camCoords.y, camCoords.z, 5000, 1, 1)
+    SetCamUseShallowDofMode(camera, true)
+    SetCamNearDof(camera, 1.2)
+    SetCamFarDof(camera, 12.0)
+    SetCamDofStrength(camera, 1.0)
+    SetCamDofMaxNearInFocusDistance(camera, 1.0)
+    Citizen.Wait(500)
+
+    DoScreenFadeIn(1000)
     CreateThread(function()
-        while DoesCamExist(previewCam) do
+        while DoesCamExist(camera) do
             SetUseHiDof()
             Wait(0)
         end
@@ -133,11 +165,13 @@ local function setupPreviewCam()
 end
 
 local function destroyPreviewCam()
-    if not previewCam then return end
+    if not camera then return end
 
     SetTimecycleModifier('default')
-    SetCamActive(previewCam, false)
-    DestroyCam(previewCam, true)
+    SetCamActive(camera, false)
+    DestroyCam(camera, true)
+    camera = nil
+    ClearPedTasks(PlayerPedId())
     RenderScriptCams(false, false, 1, true, true)
     FreezeEntityPosition(cache.ped, false)
 end
@@ -148,10 +182,17 @@ local function randomPed()
     SetPlayerModel(cache.playerId, ped.model)
     pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) end)
     SetModelAsNoLongerNeeded(ped.model)
+
+    destroyPreviewCam()
+    Citizen.Wait(100)
+    setupPreviewCam()
 end
 
 ---@param citizenId? string
 local function previewPed(citizenId)
+    
+    DoScreenFadeOut(500)
+    Citizen.Wait(500)
     if not citizenId then randomPed() return end
 
     local clothing, model = lib.callback.await('qbx_core:server:getPreviewPedData', false, citizenId)
@@ -163,6 +204,10 @@ local function previewPed(citizenId)
     else
         randomPed()
     end
+    
+    destroyPreviewCam()
+    Citizen.Wait(100)
+    setupPreviewCam()
 end
 
 ---@class CharacterRegistration
