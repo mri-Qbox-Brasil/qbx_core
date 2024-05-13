@@ -265,8 +265,8 @@ local function characterDialog()
             format = config.characters.dateFormat,
             returnString = true,
             -- min = config.characters.dateMin,
-            max = config.characters.dateMax,
-            default = config.characters.dateMax
+            -- max = config.characters.dateMax,
+            -- default = config.characters.dateMax
         }
     })
 end
