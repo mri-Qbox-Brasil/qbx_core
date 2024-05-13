@@ -113,25 +113,15 @@ if config.characters.limitNationalities then
 end
 
 local ScenarioType = {
-    'WORLD_HUMAN_SMOKING_POT',
-    'WORLD_HUMAN_MUSICIAN',
+    -- 'WORLD_HUMAN_SMOKING_POT',
+    -- 'WORLD_HUMAN_MUSICIAN',
     'WORLD_HUMAN_COP_IDLES',
-    -- 'WORLD_HUMAN_CHEERING',
-    'WORLD_HUMAN_TOURIST_MAP',
-    -- 'WORLD_HUMAN_HAMMERING',
-    'WORLD_HUMAN_PUSH_UPS',
-    -- 'WORLD_HUMAN_PARTYING',
-    'WORLD_HUMAN_PICNIC',
-    'WORLD_HUMAN_SIT_UPS',
-    -- 'WORLD_HUMAN_TENNIS_PLAYER',
-    'WORLD_HUMAN_DRINKING',
-    -- 'WORLD_HUMAN_BINOCULARS',
-    'WORLD_HUMAN_HANG_OUT_STREET',
-    -- 'WORLD_HUMAN_PAPARAZZI',
-    -- 'WORLD_HUMAN_TOURIST_MOBILE',
-    -- 'WORLD_HUMAN_VALET',
-    -- 'WORLD_HUMAN_STAND_IMPATIENT_CLUBHOUSE',
-    -- 'WORLD_HUMAN_MUSCLE_FREE_WEIGHTS'
+    -- 'WORLD_HUMAN_TOURIST_MAP',
+    -- 'WORLD_HUMAN_PUSH_UPS',
+    -- 'WORLD_HUMAN_PICNIC',
+    -- 'WORLD_HUMAN_SIT_UPS',
+    -- 'WORLD_HUMAN_DRINKING',
+    -- 'WORLD_HUMAN_HANG_OUT_STREET',
 }
 local camera = nil
 local function setupPreviewCam()
@@ -452,8 +442,8 @@ local function chooseCharacter()
                 ['Telefone'] = character.charinfo.phone
             } or nil,
             icon = 'user',
-            iconColor = config.character.iconColor,
-            iconAnimation = config.character.iconAnimation,
+            iconColor = config.characters.iconColor,
+            iconAnimation = config.characters.iconAnimation,
             onSelect = function()
                 if character then
                     lib.showContext('qbx_core_multichar_character_'..i)
@@ -478,8 +468,8 @@ local function chooseCharacter()
                         title = locale('info.play'),
                         description = locale('info.play_description', name),
                         icon = 'play',
-                        iconColor = config.character.iconColor,
-                        iconAnimation = config.character.iconAnimation,
+                        iconColor = config.characters.iconColor,
+                        iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
                             DoScreenFadeOut(10)
                             lib.callback.await('qbx_core:server:loadCharacter', false, character.citizenid)
@@ -498,8 +488,8 @@ local function chooseCharacter()
                         title = locale('info.delete_character'),
                         description = locale('info.delete_character_description', name),
                         icon = 'trash',
-                        iconColor = config.character.iconColor,
-                        iconAnimation = config.character.iconAnimation,
+                        iconColor = config.characters.iconColor,
+                        iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
                             local alert = lib.alertDialog({
                                 header = locale('info.delete_character'),
@@ -523,7 +513,7 @@ local function chooseCharacter()
 
     lib.registerContext({
         id = 'qbx_core_multichar_characters',
-        title = '[logo]('..config.characters.imageURL..') **'..locale('info.multichar_title')..'**',
+        title = '![logo]('..config.characters.imageURL..') **'..locale('info.multichar_title')..'**',
         canClose = false,
         options = options
     })
