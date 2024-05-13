@@ -13,9 +13,9 @@ return {
         enableDeleteButton = true, -- Whether players should be able to delete characters themselves.
         startingApartment = false, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
 
-        dateFormat = 'DD-MM-YYYY',
-        dateMin = '01-01-1900', -- Has to be in the same format as the dateFormat config
-        dateMax = '31-12-2006', -- Has to be in the same format as the dateFormat config
+        dateFormat = 'DD/MM/YYYY',
+        -- dateMin = '01/01/1900', -- Has to be in the same format as the dateFormat config
+        dateMax = '31/12/2006', -- Has to be in the same format as the dateFormat config
 
         limitNationalities = true, -- Setting this to false will allow people to enter whatever they want in the nationality field
         nationalities = {

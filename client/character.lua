@@ -264,7 +264,7 @@ local function characterDialog()
             label = locale('info.birth_date'),
             format = config.characters.dateFormat,
             returnString = true,
-            min = config.characters.dateMin,
+            -- min = config.characters.dateMin,
             max = config.characters.dateMax,
             default = config.characters.dateMax
         }
