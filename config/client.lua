@@ -5,13 +5,17 @@ return {
     pauseMapText = 'mri_Qbox BRASIL', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
 
     characters = {
+        imageURL = 'https://media.discordapp.net/attachments/1227489601925550150/1236525641973764096/Brasil_96_x_96_px_2.png?ex=663f93fe&is=663e427e&hm=afd1c2a4814d090fd4312d39aaf90bc71991a38be3450f5b0c532743e19bec7f&=&format=webp&quality=lossless&width=24&height=24',
+        iconColor = '#51CF66',
+        iconAnimation = 'fade',
+        
         useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
         enableDeleteButton = true, -- Whether players should be able to delete characters themselves.
         startingApartment = false, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
 
-        dateFormat = 'YYYY-MM-DD',
-        dateMin = '1900-01-01', -- Has to be in the same format as the dateFormat config
-        dateMax = '2006-12-31', -- Has to be in the same format as the dateFormat config
+        dateFormat = 'DD-MM-YYYY',
+        dateMin = '01-01-1900', -- Has to be in the same format as the dateFormat config
+        dateMax = '31-12-2006', -- Has to be in the same format as the dateFormat config
 
         limitNationalities = true, -- Setting this to false will allow people to enter whatever they want in the nationality field
         nationalities = {

@@ -452,6 +452,8 @@ local function chooseCharacter()
                 ['Telefone'] = character.charinfo.phone
             } or nil,
             icon = 'user',
+            iconColor = config.character.iconColor,
+            iconAnimation = config.character.iconAnimation,
             onSelect = function()
                 if character then
                     lib.showContext('qbx_core_multichar_character_'..i)
@@ -476,6 +478,8 @@ local function chooseCharacter()
                         title = locale('info.play'),
                         description = locale('info.play_description', name),
                         icon = 'play',
+                        iconColor = config.character.iconColor,
+                        iconAnimation = config.character.iconAnimation,
                         onSelect = function()
                             DoScreenFadeOut(10)
                             lib.callback.await('qbx_core:server:loadCharacter', false, character.citizenid)
@@ -494,6 +498,8 @@ local function chooseCharacter()
                         title = locale('info.delete_character'),
                         description = locale('info.delete_character_description', name),
                         icon = 'trash',
+                        iconColor = config.character.iconColor,
+                        iconAnimation = config.character.iconAnimation,
                         onSelect = function()
                             local alert = lib.alertDialog({
                                 header = locale('info.delete_character'),
@@ -517,7 +523,7 @@ local function chooseCharacter()
 
     lib.registerContext({
         id = 'qbx_core_multichar_characters',
-        title = locale('info.multichar_title'),
+        title = '[logo]('..config.characters.imageURL..') **'..locale('info.multichar_title')..'**',
         canClose = false,
         options = options
     })
