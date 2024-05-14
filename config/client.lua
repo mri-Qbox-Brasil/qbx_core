@@ -16,8 +16,8 @@ return {
         dateFormat = 'DD/MM/YYYY',
 
         -- necessita fix: mur4i 13/05/24
-        -- dateMin = '01/01/1900', -- Has to be in the same format as the dateFormat config
-        -- dateMax = '31/12/2006', -- Has to be in the same format as the dateFormat config
+        dateMin = '01/01/1900', -- Has to be in the same format as the dateFormat config
+        dateMax = '31/12/2006', -- Has to be in the same format as the dateFormat config
 
         limitNationalities = true, -- Setting this to false will allow people to enter whatever they want in the nationality field
         nationalities = {
