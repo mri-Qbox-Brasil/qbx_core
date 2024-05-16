@@ -442,7 +442,6 @@ local function chooseCharacter()
                 ['Telefone'] = character.charinfo.phone
             } or nil,
             icon = 'user',
-            iconColor = config.characters.iconColor,
             iconAnimation = config.characters.iconAnimation,
             onSelect = function()
                 if character then
@@ -470,7 +469,6 @@ local function chooseCharacter()
                         title = locale('info.play'),
                         description = locale('info.play_description', name),
                         icon = 'play',
-                        iconColor = config.characters.iconColor,
                         iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
                             DoScreenFadeOut(10)
@@ -490,7 +488,6 @@ local function chooseCharacter()
                         title = locale('info.delete_character'),
                         description = locale('info.delete_character_description', name),
                         icon = 'trash',
-                        iconColor = config.characters.iconColor,
                         iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
                             local alert = lib.alertDialog({

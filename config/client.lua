@@ -6,7 +6,6 @@ return {
 
     characters = {
         imageURL = 'https://cfx-nui-mri_Qbox/web-side/icones/logo24.png',
-        iconColor = '#51CF66',
         iconAnimation = 'fade',
         
         useExternalCharacters = false, -- Whether you have an external character management resource. (If true, disables the character management inside the core)
