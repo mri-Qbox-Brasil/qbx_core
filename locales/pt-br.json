@@ -30,7 +30,7 @@
         "character_deleted_citizenid": "Você deletou com sucesso o personagem com ID do Cidadão %s."
     },
     "info": {
-        "received_paycheck": "Você recebeu seu salário de %s€",
+        "received_paycheck": "Você recebeu seu salário de R$ %s",
         "job_info": "Emprego: %s | Cargo: %s | Em serviço: %s",
         "gang_info": "Gangue: %s | Cargo: %s",
         "on_duty": "Você agora está de serviço!",

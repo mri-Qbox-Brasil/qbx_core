@@ -460,7 +460,9 @@ local function chooseCharacter()
         if character then
             lib.registerContext({
                 id = 'qbx_core_multichar_character_'..i,
-                title = ('%s %s - %s'):format(character.charinfo.firstname, character.charinfo.lastname, character.citizenid),
+                title = ('%s %s'):format(character.charinfo.firstname, character.charinfo.lastname),
+                description = ('%s'):format(character.citizenid),
+                background = true,
                 canClose = false,
                 menu = 'qbx_core_multichar_characters',
                 options = {
@@ -513,7 +515,9 @@ local function chooseCharacter()
 
     lib.registerContext({
         id = 'qbx_core_multichar_characters',
-        title = '![logo]('..config.characters.imageURL..') **'..locale('info.multichar_title')..'**',
+        title = '![logo]('..config.characters.imageURL..') '..locale('info.multichar_title'),
+        background = true,
+        description = 'Seleção de Personagem',
         canClose = false,
         options = options
     })
