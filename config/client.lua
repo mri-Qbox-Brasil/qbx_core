@@ -254,21 +254,21 @@ return {
 
         largeIcon = { -- To set this up, visit https://forum.cfx.re/t/how-to-updated-discord-rich-presence-custom-image/157686
             icon = 'logo_name', -- Here you will have to put the image name for the 'large' icon.
-            text = 'This is a large icon with text', -- Here you can add hover text for the 'large' icon.
+            text = 'Este é um ícone grande com texto', -- Here you can add hover text for the 'large' icon.
         },
 
         smallIcon = {
             icon = 'logo_name', -- Here you will have to put the image name for the 'small' icon.
-            text = 'This is a small icon with text', -- Here you can add hover text for the 'small' icon.
+            text = 'Este é um pequeno ícone com texto', -- Here you can add hover text for the 'small' icon.
         },
 
         firstButton = {
-            text = 'First Button!',
+            text = 'Primeiro botão!',
             link = 'fivem://connect/localhost:30120',
         },
 
         secondButton = {
-            text = 'Second Button!',
+            text = 'Segundo botão!',
             link = 'fivem://connect/localhost:30120',
         }
     },
