@@ -471,9 +471,11 @@ local function chooseCharacter()
                         icon = 'play',
                         iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
-                            DoScreenFadeOut(10)
+                            if not GetResourceState('mri_Qspawn'):find('start') then DoScreenFadeOut(10) end
                             lib.callback.await('qbx_core:server:loadCharacter', false, character.citizenid)
-                            if GetResourceState('qbx_apartments'):find('start') and config.characters.startingApartment then
+                            if GetResourceState('mri_Qspawn'):find('start') then
+                                exports['mri_Qspawn']:chooseSpawn()
+                            elseif GetResourceState('qbx_apartments'):find('start') and config.characters.startingApartment then
                                 TriggerEvent('apartments:client:setupSpawnUI', character.citizenid)
                             elseif GetResourceState('qbx_spawn'):find('start') then
                                 TriggerEvent('qb-spawn:client:setupSpawns', character.citizenid)
