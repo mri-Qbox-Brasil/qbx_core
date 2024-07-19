@@ -3,7 +3,7 @@ game 'gta5'
 
 description 'QBX_Core'
 repository 'https://github.com/Qbox-project/qbx_core'
-version '1.12.0'
+version '1.17.2'
 
 ox_lib 'locale'
 
@@ -11,6 +11,7 @@ shared_scripts {
     '@ox_lib/init.lua',
     'modules/lib.lua',
     'shared/locale.lua',
+    'shared/functions.lua',
 }
 
 client_scripts {
@@ -19,7 +20,6 @@ client_scripts {
     'client/functions.lua',
     'client/loops.lua',
     'client/events.lua',
-    'client/mri-qbox.lua',
     'client/character.lua',
     'client/discord.lua',
     'bridge/qb/client/main.lua',

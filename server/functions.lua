@@ -399,7 +399,7 @@ exports('GetCoreVersion', GetCoreVersion)
 local function ExploitBan(playerId, origin)
     local name = GetPlayerName(playerId)
     CreateThread(function()
-        storage.insertBan({
+        local success, errorResult = storage.insertBan({
             name = name,
             license = GetPlayerIdentifierByType(playerId --[[@as string]], 'license2') or GetPlayerIdentifierByType(playerId --[[@as string]], 'license'),
             discordId = GetPlayerIdentifierByType(playerId --[[@as string]], 'discord'),
@@ -408,6 +408,7 @@ local function ExploitBan(playerId, origin)
             expiration = 2147483647,
             bannedBy = 'Anti Cheat'
         })
+        assert(success, json.encode(errorResult))
     end)
     DropPlayer(playerId --[[@as string]], locale('info.exploit_banned', serverConfig.discord))
     logger.log({
@@ -421,3 +422,13 @@ local function ExploitBan(playerId, origin)
 end
 
 exports('ExploitBan', ExploitBan)
+
+---@param source Source
+---@param filter string | string[] | table<string, number>
+---@return boolean
+function HasPrimaryGroup(source, filter)
+    local playerData = QBX.Players[source].PlayerData
+    return HasPlayerGotGroup(filter, playerData)
+end
+
+exports('HasPrimaryGroup', HasPrimaryGroup)
