@@ -2,7 +2,7 @@ return {
     statusIntervalSeconds = 5, -- how often to check hunger/thirst status to remove health if 0.
     loadingModelsTimeout = 60000, -- Waiting time for ox_lib to load the models before throws an error, for low specs pc
 
-    pauseMapText = 'mri_Qbox BRASIL', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
+    pauseMapText = 'mri Qbox Brasil', -- Text shown above the map when ESC is pressed. If left empty 'FiveM' will appear
 
     characters = {
         imageURL = 'https://cfx-nui-mri_Qbox/web-side/icones/logo24.png',
@@ -13,8 +13,6 @@ return {
         startingApartment = false, -- If set to false, skips apartment choice in the beginning (requires qbx_spawn if true)
 
         dateFormat = 'DD/MM/YYYY',
-
-        -- necessita fix: mur4i 13/05/24
         dateMin = '01/01/1900', -- Has to be in the same format as the dateFormat config
         dateMax = '31/12/2006', -- Has to be in the same format as the dateFormat config
 
@@ -91,6 +89,7 @@ return {
             'Grego',
             'Granadino',
             'Guatemalteco',
+            'Guinea-Bissauan',
             'Guineense',
             'Guyanense',
             'Haitiano',
@@ -243,6 +242,10 @@ return {
             -- {
             --     pedCoords = vec4(2265.27, 2925.02, -84.8, 267.77),
             --     camCoords = vec4(2268.24, 2925.02, -84.36, 90.88),
+            -- },
+            -- {
+            --     pedCoords = vec4(-1004.5, -478.51, 50.03, 28.19),
+            --     camCoords = vec4(-1006.36, -476.19, 50.50, 210.38),
             -- }
         },
     },

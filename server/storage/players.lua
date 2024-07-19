@@ -11,8 +11,15 @@ local characterDataTables = require 'config.server'.characterDataTables
 ---@field expiration integer epoch second that the ban will expire
 
 ---@param request InsertBanRequest
+---@return boolean success
+---@return ErrorResult? errorResult
 local function insertBan(request)
-    assert(request.discordId or request.ip or request.license, 'no identifier provided')
+    if not request.discordId and not request.ip and not request.license then
+        return false, {
+            code = 'no_identifier',
+            message = 'discordId, ip, or license required in the ban request'
+        }
+    end
 
     MySQL.insert.await('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (?, ?, ?, ?, ?, ?, ?)', {
         request.name,
@@ -23,6 +30,7 @@ local function insertBan(request)
         request.expiration,
         request.bannedBy,
     })
+    return true
 end
 
 ---@param request GetBanRequest
@@ -53,7 +61,7 @@ end
 ---@return BanEntity?
 local function fetchBan(request)
     local column, value = getBanId(request)
-    local result = MySQL.single.await('SELECT * FROM bans WHERE ' ..column.. ' = ?', { value })
+    local result = MySQL.single.await('SELECT expire, reason FROM bans WHERE ' ..column.. ' = ?', { value })
     return result and {
         expire = result.expire,
         reason = result.reason,
@@ -190,7 +198,7 @@ local function fetchAllPlayerEntities(license2, license)
     ---@type PlayerEntity[]
     local chars = {}
     ---@type PlayerEntityDatabase[]
-    local result = MySQL.query.await('SELECT *, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE license = ? OR license = ?', {license, license2})
+    local result = MySQL.query.await('SELECT citizenid, charinfo, money, job, gang, position, metadata, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE license = ? OR license = ?', {license, license2})
     for i = 1, #result do
         chars[i] = result[i]
         chars[i].charinfo = json.decode(result[i].charinfo)
@@ -209,15 +217,15 @@ end
 ---@return PlayerEntity?
 local function fetchPlayerEntity(citizenId)
     ---@type PlayerEntityDatabase
-    local player = MySQL.single.await('SELECT *, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players where citizenid = ?', { citizenId })
+    local player = MySQL.single.await('SELECT citizenid, license, name, charinfo, money, job, gang, position, metadata, UNIX_TIMESTAMP(last_logged_out) AS lastLoggedOutUnix FROM players WHERE citizenid = ?', { citizenId })
     local charinfo = json.decode(player.charinfo)
     return player and {
         citizenid = player.citizenid,
-        cid = charinfo.cid,
         license = player.license,
         name = player.name,
         money = json.decode(player.money),
         charinfo = charinfo,
+        cid = charinfo.cid,
         job = player.job and json.decode(player.job),
         gang = player.gang and json.decode(player.gang),
         position = convertPosition(player.position),

@@ -381,7 +381,6 @@ local function createCharacter(cid)
 
     if GetResourceState('qbx_spawn') == 'missing' then
         spawnDefault()
-        TriggerEvent('qb-clothes:client:CreateFirstCharacter')
     else
         if config.characters.startingApartment then
             TriggerEvent('apartments:client:setupSpawnUI', newData)
@@ -413,7 +412,7 @@ local function chooseCharacter()
     SetEntityCoords(cache.ped, randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z, false, false, false, false)
     SetEntityHeading(cache.ped, randomLocation.pedCoords.w)
     ---@diagnostic disable-next-line: missing-parameter
-    lib.callback('qbx_core:server:setCharBucket', false)
+    lib.callback.await('qbx_core:server:setCharBucket')
     Wait(1500)
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
