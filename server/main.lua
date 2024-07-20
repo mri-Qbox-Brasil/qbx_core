@@ -1,4 +1,4 @@
-lib.versionCheck('Qbox-project/qbx_core')
+-- lib.versionCheck('Qbox-project/qbx_core')
 assert(lib.checkDependency('ox_lib', '3.20.0', true))
 
 ---@type 'strict'|'relaxed'|'inactive'
