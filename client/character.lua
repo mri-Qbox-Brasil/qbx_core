@@ -127,7 +127,10 @@ local camera = nil
 local function setupPreviewCam()
     SetTimecycleModifierStrength(1.0)
     FreezeEntityPosition(cache.ped, false)
-    TaskStartScenarioInPlace(cache.ped, ScenarioType[math.random(1,#ScenarioType)], 0, true)
+    ClearPedTasks(PlayerPedId())
+    if IsEntityVisible(cache.ped) then
+        TaskStartScenarioInPlace(cache.ped, ScenarioType[math.random(1,#ScenarioType)], 0, true)
+    end
     local coords = GetOffsetFromEntityInWorldCoords(cache.ped, 0, 1.6, 0)
     camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
     SetCamActive(camera, true)
@@ -172,6 +175,7 @@ local function randomPed()
     SetPlayerModel(cache.playerId, ped.model)
     pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) end)
     SetModelAsNoLongerNeeded(ped.model)
+    SetEntityVisible(PlayerPedId(), false, 0)
 
     destroyPreviewCam()
     Citizen.Wait(100)
@@ -189,6 +193,7 @@ local function previewPed(citizenId)
     if model and clothing then
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
+        SetEntityVisible(PlayerPedId(), true)
         pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), json.decode(clothing)) end)
         SetModelAsNoLongerNeeded(model)
     else
@@ -395,7 +400,7 @@ end
 
 local function chooseCharacter()
     randomLocation = config.characters.locations[math.random(1, #config.characters.locations)]
-    SetFollowPedCamViewMode(2)
+    -- SetFollowPedCamViewMode(2)
 
     DoScreenFadeOut(500)
 
@@ -440,7 +445,7 @@ local function chooseCharacter()
                 ['Patente'] = character.gang.grade.name,
                 ['Telefone'] = character.charinfo.phone
             } or nil,
-            icon = 'user',
+            icon = character and 'user' or 'plus',
             iconAnimation = config.characters.iconAnimation,
             onSelect = function()
                 if character then
@@ -501,6 +506,7 @@ local function chooseCharacter()
                                 TriggerServerEvent('qbx_core:server:deleteCharacter', character.citizenid)
                                 destroyPreviewCam()
                                 chooseCharacter()
+                                SetEntityVisible(cache.ped, true, false)
                             else
                                 lib.showContext('qbx_core_multichar_character_'..i)
                             end
