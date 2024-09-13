@@ -30,9 +30,9 @@
         "character_deleted_citizenid": "Você deletou com sucesso o personagem com ID do Cidadão %s."
     },
     "info": {
-        "received_paycheck": "Você recebeu seu salário de %s€",
-        "job_info": "Emprego: %s | Grau: %s | Serviço: %s",
-        "gang_info": "Gangue: %s | Grau: %s",
+        "received_paycheck": "Você recebeu seu salário de R$ %s",
+        "job_info": "Emprego: %s | Cargo: %s | Em serviço: %s",
+        "gang_info": "Gangue: %s | Cargo: %s",
         "on_duty": "Você agora está de serviço!",
         "off_duty": "Você agora está de folga!",
         "checking_ban": "Olá %s. Estamos verificando se você foi banido.",
@@ -40,7 +40,7 @@
         "checking_whitelisted": "Olá %s. Estamos verificando sua whitelist.",
         "exploit_banned": "Você foi banido por trapaça. Verifique nosso Discord para mais informações: %s",
         "exploit_dropped": "Você foi expulso por exploração",
-        "multichar_title": "Qbox Multichar",
+        "multichar_title": "mri_Qbox Multichar",
         "multichar_new_character": "Novo Personagem #%s",
         "char_male": "Masculino",
         "char_female": "Feminino",
@@ -56,9 +56,9 @@
         "first_name": "Primeiro Nome",
         "last_name": "Sobrenome",
         "nationality": "Nacionalidade",
-        "gender": "Sexo",
+        "gender": "Gênero",
         "birth_date": "Data de Nascimento",
-        "select_gender": "Selecione seu sexo...",
+        "select_gender": "Selecionar gênero",
         "confirm_delete": "Tem certeza de que deseja excluir este personagem?",
         "in_queue": "🐌 Você está %s/%s na fila. (%s) %s"
     },
@@ -111,7 +111,7 @@
             "help": "Dar Dinheiro a um Jogador (Apenas Admin)",
             "params": {
                 "id": { "name": "id", "help": "ID do jogador" },
-                "moneytype": { "name": "moneytype", "help": "Tipo de dinheiro (dinheiro, banco, cripto)" },
+                "moneytype": { "name": "moneytype", "help": "Tipo de dinheiro (cash, bank, crypto)" },
                 "amount": { "name": "amount", "help": "Quantidade de dinheiro" }
             }
         },
@@ -119,7 +119,7 @@
             "help": "Definir Quantidade de Dinheiro do Jogador (Apenas Admin)",
             "params": {
                 "id": { "name": "id", "help": "ID do jogador" },
-                "moneytype": { "name": "moneytype", "help": "Tipo de dinheiro (dinheiro, banco, cripto)" },
+                "moneytype": { "name": "moneytype", "help": "Tipo de dinheiro (cash, bank, crypto)" },
                 "amount": { "name": "amount", "help": "Quantidade de dinheiro" }
             }
         },
