@@ -3,7 +3,7 @@ local defaultSpawn = require 'config.shared'.defaultSpawn
 
 if config.characters.useExternalCharacters then return end
 
-local previewCam
+local previewCam = nil
 local randomLocation = config.characters.locations[math.random(1, #config.characters.locations)]
 
 local randomPeds = {
@@ -112,20 +112,45 @@ if config.characters.limitNationalities then
     end)
 end
 
+local ScenarioType = {
+    -- 'WORLD_HUMAN_SMOKING_POT',
+    -- 'WORLD_HUMAN_MUSICIAN',
+    'WORLD_HUMAN_COP_IDLES',
+    -- 'WORLD_HUMAN_TOURIST_MAP',
+    -- 'WORLD_HUMAN_PUSH_UPS',
+    -- 'WORLD_HUMAN_PICNIC',
+    -- 'WORLD_HUMAN_SIT_UPS',
+    -- 'WORLD_HUMAN_DRINKING',
+    -- 'WORLD_HUMAN_HANG_OUT_STREET',
+}
+local camera = nil
 local function setupPreviewCam()
-    DoScreenFadeIn(1000)
-    SetTimecycleModifier('hud_def_blur')
     SetTimecycleModifierStrength(1.0)
     FreezeEntityPosition(cache.ped, false)
-    previewCam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', randomLocation.camCoords.x, randomLocation.camCoords.y, randomLocation.camCoords.z, -6.0, 0.0, randomLocation.camCoords.w, 40.0, false, 0)
-    SetCamActive(previewCam, true)
-    SetCamUseShallowDofMode(previewCam, true)
-    SetCamNearDof(previewCam, 0.4)
-    SetCamFarDof(previewCam, 1.8)
-    SetCamDofStrength(previewCam, 0.7)
-    RenderScriptCams(true, false, 1, true, true)
+    ClearPedTasks(PlayerPedId())
+    if IsEntityVisible(cache.ped) then
+        TaskStartScenarioInPlace(cache.ped, ScenarioType[math.random(1,#ScenarioType)], 0, true)
+    end
+    local coords = GetOffsetFromEntityInWorldCoords(cache.ped, 0, 1.6, 0)
+    camera = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+    SetCamActive(camera, true)
+    RenderScriptCams(true, true, 1250, 1, 0)
+    SetCamCoord(camera, coords.x, coords.y, coords.z + 0.65)
+    SetCamFov(camera, 38.0)
+    SetCamRot(camera, 0.0, 0.0, GetEntityHeading(cache.ped) + 180)
+    PointCamAtPedBone(camera, cache.ped, 31086, 0.0 - 0.4, 0.0, 0.03, 1)
+    local camCoords = GetCamCoord(camera)
+    TaskLookAtCoord(cache.ped, camCoords.x, camCoords.y, camCoords.z, 5000, 1, 1)
+    SetCamUseShallowDofMode(camera, true)
+    SetCamNearDof(camera, 1.2)
+    SetCamFarDof(camera, 12.0)
+    SetCamDofStrength(camera, 1.0)
+    SetCamDofMaxNearInFocusDistance(camera, 1.0)
+    Citizen.Wait(500)
+
+    DoScreenFadeIn(1000)
     CreateThread(function()
-        while DoesCamExist(previewCam) do
+        while DoesCamExist(camera) do
             SetUseHiDof()
             Wait(0)
         end
@@ -133,15 +158,15 @@ local function setupPreviewCam()
 end
 
 local function destroyPreviewCam()
-    if not previewCam then return end
+    if not camera then return end
 
     SetTimecycleModifier('default')
-    SetCamActive(previewCam, false)
-    DestroyCam(previewCam, true)
+    SetCamActive(camera, false)
+    DestroyCam(camera, true)
+    camera = nil
+    ClearPedTasks(PlayerPedId())
     RenderScriptCams(false, false, 1, true, true)
     FreezeEntityPosition(cache.ped, false)
-    DisplayRadar(true)
-    previewCam = nil
 end
 
 local function randomPed()
@@ -150,21 +175,34 @@ local function randomPed()
     SetPlayerModel(cache.playerId, ped.model)
     pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), ped) end)
     SetModelAsNoLongerNeeded(ped.model)
+    SetEntityVisible(PlayerPedId(), false, 0)
+
+    destroyPreviewCam()
+    Citizen.Wait(100)
+    setupPreviewCam()
 end
 
 ---@param citizenId? string
 local function previewPed(citizenId)
+    
+    DoScreenFadeOut(500)
+    Citizen.Wait(500)
     if not citizenId then randomPed() return end
 
     local clothing, model = lib.callback.await('qbx_core:server:getPreviewPedData', false, citizenId)
     if model and clothing then
         lib.requestModel(model, config.loadingModelsTimeout)
         SetPlayerModel(cache.playerId, model)
+        SetEntityVisible(PlayerPedId(), true)
         pcall(function() exports['illenium-appearance']:setPedAppearance(PlayerPedId(), json.decode(clothing)) end)
         SetModelAsNoLongerNeeded(model)
     else
         randomPed()
     end
+    
+    destroyPreviewCam()
+    Citizen.Wait(100)
+    setupPreviewCam()
 end
 
 ---@return CharacterRegistration?
@@ -174,7 +212,7 @@ local function characterDialog()
         required = true,
         icon = 'user-shield',
         label = locale('info.nationality'),
-        default = 'American',
+        default = 'Brasileiro',
         searchable = true,
         options = nationalities
     } or {
@@ -182,7 +220,7 @@ local function characterDialog()
         required = true,
         icon = 'user-shield',
         label = locale('info.nationality'),
-        placeholder = 'Duck'
+        placeholder = 'Brasileiro'
     }
 
     return lib.inputDialog(locale('info.character_registration_title'), {
@@ -191,14 +229,14 @@ local function characterDialog()
             required = true,
             icon = 'user-pen',
             label = locale('info.first_name'),
-            placeholder = 'Hank'
+            placeholder = 'Murai'
         },
         {
             type = 'input',
             required = true,
             icon = 'user-pen',
             label = locale('info.last_name'),
-            placeholder = 'Jordan'
+            placeholder = 'Dev'
         },
         nationalityOption,
         {
@@ -223,8 +261,8 @@ local function characterDialog()
             label = locale('info.birth_date'),
             format = config.characters.dateFormat,
             returnString = true,
-            min = config.characters.dateMin,
-            max = config.characters.dateMax,
+            -- min = config.characters.dateMin,
+            -- max = config.characters.dateMax,
             default = config.characters.dateMax
         }
     })
@@ -354,8 +392,7 @@ end
 
 local function chooseCharacter()
     randomLocation = config.characters.locations[math.random(1, #config.characters.locations)]
-    SetFollowPedCamViewMode(2)
-    DisplayRadar(false)
+    -- SetFollowPedCamViewMode(2)
 
     DoScreenFadeOut(500)
 
@@ -365,6 +402,10 @@ local function chooseCharacter()
 
     FreezeEntityPosition(cache.ped, true)
     Wait(1000)
+
+    RequestCollisionAtCoord(randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z)
+    while not HasCollisionLoadedAroundEntity(cache.ped) do Wait(0) end
+
     SetEntityCoords(cache.ped, randomLocation.pedCoords.x, randomLocation.pedCoords.y, randomLocation.pedCoords.z, false, false, false, false)
     SetEntityHeading(cache.ped, randomLocation.pedCoords.w)
     ---@diagnostic disable-next-line: missing-parameter
@@ -383,20 +424,21 @@ local function chooseCharacter()
         options[i] = {
             title = character and ('%s %s - %s'):format(character.charinfo.firstname, character.charinfo.lastname, character.citizenid) or locale('info.multichar_new_character', i),
             metadata = character and {
-                Name = name,
-                Gender = character.charinfo.gender == 0 and locale('info.char_male') or locale('info.char_female'),
-                Birthdate = character.charinfo.birthdate,
-                Nationality = character.charinfo.nationality,
-                ['Account Number'] = character.charinfo.account,
-                Bank = lib.math.groupdigits(character.money.bank),
-                Cash = lib.math.groupdigits(character.money.cash),
-                Job = character.job.label,
-                ['Job Grade'] = character.job.grade.name,
-                Gang = character.gang.label,
-                ['Gang Grade'] = character.gang.grade.name,
-                ['Phone Number'] = character.charinfo.phone
+                ['Nome'] = name,
+                ['Gênero'] = character.charinfo.gender == 0 and locale('info.char_male') or locale('info.char_female'),
+                ['Data de Nascimento'] = character.charinfo.birthdate,
+                ['Nacionalidade'] = character.charinfo.nationality,
+                ['Número da conta'] = character.charinfo.account,
+                ['Banco'] = lib.math.groupdigits(character.money.bank),
+                ['Carteira'] = lib.math.groupdigits(character.money.cash),
+                ['Emprego'] = character.job.label,
+                ['Nível de emprego'] = character.job.grade.name,
+                ['Gangue'] = character.gang.label,
+                ['Patente'] = character.gang.grade.name,
+                ['Telefone'] = character.charinfo.phone
             } or nil,
-            icon = 'user',
+            icon = character and 'user' or 'plus',
+            iconAnimation = config.characters.iconAnimation,
             onSelect = function()
                 if character then
                     lib.showContext('qbx_core_multichar_character_'..i)
@@ -413,7 +455,9 @@ local function chooseCharacter()
         if character then
             lib.registerContext({
                 id = 'qbx_core_multichar_character_'..i,
-                title = ('%s %s - %s'):format(character.charinfo.firstname, character.charinfo.lastname, character.citizenid),
+                title = ('%s %s'):format(character.charinfo.firstname, character.charinfo.lastname),
+                description = ('%s'):format(character.citizenid),
+                background = true,
                 canClose = false,
                 menu = 'qbx_core_multichar_characters',
                 options = {
@@ -421,10 +465,13 @@ local function chooseCharacter()
                         title = locale('info.play'),
                         description = locale('info.play_description', name),
                         icon = 'play',
+                        iconAnimation = config.characters.iconAnimation,
                         onSelect = function()
-                            DoScreenFadeOut(10)
+                            if not GetResourceState('mri_Qspawn'):find('start') then DoScreenFadeOut(10) end
                             lib.callback.await('qbx_core:server:loadCharacter', false, character.citizenid)
-                            if GetResourceState('qbx_apartments'):find('start') then
+                            if GetResourceState('mri_Qspawn'):find('start') then
+                                exports['mri_Qspawn']:chooseSpawn()
+                            elseif GetResourceState('qbx_apartments'):find('start') and config.characters.startingApartment then
                                 TriggerEvent('apartments:client:setupSpawnUI', character.citizenid)
                             elseif GetResourceState('qbx_spawn'):find('start') then
                                 TriggerEvent('qb-spawn:client:setupSpawns', character.citizenid)
@@ -462,7 +509,9 @@ local function chooseCharacter()
 
     lib.registerContext({
         id = 'qbx_core_multichar_characters',
-        title = locale('info.multichar_title'),
+        title = '![logo]('..config.characters.imageURL..') '..locale('info.multichar_title'),
+        background = true,
+        description = 'Seleção de Personagem',
         canClose = false,
         options = options
     })
