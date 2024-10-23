@@ -1,6 +1,6 @@
 return {
     serverName = 'mri-Qbox BRASIL',
-    defaultSpawn = vec4(-66.24, -822.09, 285.61 -1, 78.8),
+    defaultSpawn = vec4(-540.58, -212.02, 37.65-1, 208.88),
     notifyPosition = 'center-left', -- 'top' | 'top-right' | 'top-left' | 'bottom' | 'bottom-right' | 'bottom-left'
     ---@type { name: string, amount: integer, metadata: fun(source: number): table }[]
     starterItems = { -- Character starting items
