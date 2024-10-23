@@ -219,7 +219,8 @@ return {
 
         locations = { -- Spawn locations for multichar, these are chosen randomly
             {
-                pedCoords = vec4(-785.12, 337.61, 216.84 -1, 358.31),
+                pedCoords = vec4(-66.28, -822.13, 285.61 -1, 70.82),
+                -- pedCoords = vec4(-785.12, 337.61, 216.84 -1, 358.31),
                 -- pedCoords = vec4(969.25, 72.61, 116.18, 276.55),
                 -- camCoords = vec4(972.2, 72.9, 116.68, 97.27),
             },
