@@ -7,13 +7,13 @@ return {
             [0] = {
                 name = 'Recruit'
             },
-			[1] = {
+            [1] = {
                 name = 'Enforcer'
             },
-			[2] = {
+            [2] = {
                 name = 'Shot Caller'
             },
-			[3] = {
+            [3] = {
                 name = 'Boss',
                 isboss = true,
                 bankAuth = true

@@ -90,7 +90,7 @@ function SetPlayerPrimaryJob(citizenid, jobName)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -98,7 +98,7 @@ function SetPlayerPrimaryJob(citizenid, jobName)
     if not grade then
         return false, {
             code = 'player_not_in_job',
-            message = string.format('player %s does not have job %s', citizenid, jobName)
+            message = ('player %s does not have job %s'):format(citizenid, jobName)
         }
     end
 
@@ -106,11 +106,11 @@ function SetPlayerPrimaryJob(citizenid, jobName)
     if not job then
         return false, {
             code = 'job_not_found',
-            message = jobName .. ' does not exist in core memory'
+            message = ('%s does not exist in core memory'):format(jobName)
         }
     end
 
-    assert(job.grades[grade] ~= nil, string.format('job %s does not have grade %s', jobName, grade))
+    assert(job.grades[grade] ~= nil, ('job %s does not have grade %s'):format(jobName, grade))
 
     player.PlayerData.job = toPlayerJob(jobName, job, grade)
     player.Functions.Save()
@@ -145,14 +145,14 @@ function AddPlayerToJob(citizenid, jobName, grade)
     if not job then
         return false, {
             code = 'job_not_found',
-            message = jobName .. ' does not exist in core memory'
+            message = ('%s does not exist in core memory'):format(jobName)
         }
     end
 
     if not job.grades[grade] then
         return false, {
             code = 'job_missing_grade',
-            message = string.format('job %s does not have grade %s', jobName, grade),
+            message = ('job %s does not have grade %s'):format(jobName, grade),
         }
     end
 
@@ -160,7 +160,7 @@ function AddPlayerToJob(citizenid, jobName, grade)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -210,7 +210,7 @@ function RemovePlayerFromJob(citizenid, jobName)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -249,7 +249,7 @@ local function setPlayerPrimaryGang(citizenid, gangName)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -257,7 +257,7 @@ local function setPlayerPrimaryGang(citizenid, gangName)
     if not grade then
         return false, {
             code = 'player_not_in_gang',
-            message = string.format('player %s does not have gang %s', citizenid, gangName)
+            message = ('player %s does not have gang %s'):format(citizenid, gangName)
         }
     end
 
@@ -265,11 +265,11 @@ local function setPlayerPrimaryGang(citizenid, gangName)
     if not gang then
         return false, {
             code = 'gang_not_found',
-            message = gangName .. ' does not exist in core memory'
+            message = ('%s does not exist in core memory'):format(gangName)
         }
     end
 
-    assert(gang.grades[grade] ~= nil, string.format('gang %s does not have grade %s', gangName, grade))
+    assert(gang.grades[grade] ~= nil, ('gang %s does not have grade %s'):format(gangName, grade))
 
     player.PlayerData.gang = {
         name = gangName,
@@ -312,14 +312,14 @@ function AddPlayerToGang(citizenid, gangName, grade)
     if not gang then
         return false, {
             code = 'gang_not_found',
-            message = gangName .. ' does not exist in core memory'
+            message = ('%s does not exist in core memory'):format(gangName)
         }
     end
 
     if not gang.grades[grade] then
         return false, {
             code = 'gang_missing_grade',
-            message = string.format('gang %s does not have grade %s', gangName, grade)
+            message = ('gang %s does not have grade %s'):format(gangName, grade)
         }
     end
 
@@ -327,7 +327,7 @@ function AddPlayerToGang(citizenid, gangName, grade)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -377,7 +377,7 @@ local function removePlayerFromGang(citizenid, gangName)
     if not player then
         return false, {
             code = 'player_not_found',
-            message = string.format('player not found with citizenid %s', citizenid)
+            message = ('player not found with citizenid %s'):format(citizenid)
         }
     end
 
@@ -419,6 +419,7 @@ exports('RemovePlayerFromGang', removePlayerFromGang)
 ---@return Player player
 function CheckPlayerData(source, playerData)
     playerData = playerData or {}
+    ---@diagnostic disable-next-line: param-type-mismatch
     local playerState = Player(source)?.state
     local Offline = true
     if source then
@@ -668,26 +669,29 @@ function CreatePlayer(playerData, Offline)
     function self.Functions.SetMetaData(meta, val)
         if not meta or type(meta) ~= 'string' then return end
 
-        if (meta == 'hunger' or meta == 'thirst' or meta == 'stress') then
-            val = lib.math.clamp(val, 0, 100)
-            if not self.Offline then
-                Player(self.PlayerData.source).state:set(meta, val, true)
-            end
-        end
-
-        if (meta == 'dead' or meta == 'inlaststand') and not self.Offline then
-            Player(self.PlayerData.source).state:set('canUseWeapons', not val, true)
-        end
-
         local oldVal = self.PlayerData.metadata[meta]
         self.PlayerData.metadata[meta] = val
         self.Functions.UpdatePlayerData()
-        if meta == 'inlaststand' or meta == 'isdead' then
-            self.Functions.Save()
-        end
+
         if not self.Offline then
+            local playerState = Player(self.PlayerData.source).state
             TriggerClientEvent('qbx_core:client:onSetMetaData', self.PlayerData.source, meta, oldVal, val)
             TriggerEvent('qbx_core:server:onSetMetaData', meta,  oldVal, val, self.PlayerData.source)
+
+            if (meta == 'hunger' or meta == 'thirst' or meta == 'stress') then
+                val = lib.math.clamp(val, 0, 100)
+                if playerState[meta] ~= val then
+                    playerState:set(meta, val, true)
+                end
+            end
+
+            if (meta == 'dead' or meta == 'inlaststand') then
+                playerState:set('canUseWeapons', not val, true)
+            end
+        end
+
+        if meta == 'inlaststand' or meta == 'isdead' then
+            self.Functions.Save()
         end
     end
 
@@ -720,7 +724,7 @@ function CreatePlayer(playerData, Offline)
         end
         local oxmoneytype = moneytype == 'cash' and 'money' or moneytype
         if accountsAsItems[oxmoneytype] then
-            exports.ox_inventory:SetItem(self.PlayerData.source, moneytype, self.PlayerData.money[moneytype])
+            exports.ox_inventory:SetItem(self.PlayerData.source, oxmoneytype, self.PlayerData.money[moneytype])
         end
     end
 
@@ -840,6 +844,12 @@ function CreatePlayer(playerData, Offline)
         return item
     end
 
+    ---@param item string
+    ---@return string
+    local function oxItemCompat(item)
+        return item == 'cash' and 'money' or item
+    end
+
     ---@deprecated use ox_inventory exports directly
     ---@param item string
     ---@param amount number
@@ -848,7 +858,7 @@ function CreatePlayer(playerData, Offline)
     ---@return boolean success
     function self.Functions.AddItem(item, amount, slot, metadata)
         assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:AddItem(self.PlayerData.source, item, amount, metadata, slot)
+        return exports.ox_inventory:AddItem(self.PlayerData.source, oxItemCompat(item), amount, metadata, slot)
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -858,7 +868,7 @@ function CreatePlayer(playerData, Offline)
     ---@return boolean success
     function self.Functions.RemoveItem(item, amount, slot)
         assert(not self.Offline, 'unsupported for offline players')
-        return exports.ox_inventory:RemoveItem(self.PlayerData.source, item, amount, nil, slot)
+        return exports.ox_inventory:RemoveItem(self.PlayerData.source, oxItemCompat(item), amount, nil, slot)
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -874,7 +884,7 @@ function CreatePlayer(playerData, Offline)
     ---@return any table
     function self.Functions.GetItemByName(itemName)
         assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotWithItem(self.PlayerData.source, itemName))
+        return qbItemCompat(exports.ox_inventory:GetSlotWithItem(self.PlayerData.source, oxItemCompat(itemName)))
     end
 
     ---@deprecated use ox_inventory exports directly
@@ -882,7 +892,7 @@ function CreatePlayer(playerData, Offline)
     ---@return any table
     function self.Functions.GetItemsByName(itemName)
         assert(not self.Offline, 'unsupported for offline players')
-        return qbItemCompat(exports.ox_inventory:GetSlotsWithItem(self.PlayerData.source, itemName))
+        return qbItemCompat(exports.ox_inventory:GetSlotsWithItem(self.PlayerData.source, oxItemCompat(itemName)))
     end
 
     ---@deprecated use ox_inventory exports directly

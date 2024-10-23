@@ -276,7 +276,7 @@ if isServer then
         while GetVehicleNumberPlateText(veh) == '' do Wait(0) end
 
         if bucket and bucket > 0 then
-            SetEntityBucket(veh, bucket)
+            exports.qbx_core:SetEntityBucket(veh, bucket)
         end
 
         if ped then
@@ -316,7 +316,7 @@ if isServer then
         end
 
         local netId = NetworkGetNetworkIdFromEntity(veh)
-
+        exports.qbx_core:EnablePersistence(veh)
         return netId, veh
     end
 else
@@ -555,7 +555,7 @@ else
         end
 
         if returnSoundId then
-           return soundId
+            return soundId
         end
 
         ReleaseSoundId(soundId)

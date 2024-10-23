@@ -204,22 +204,23 @@ local function playerStateBagCheck(bagName, meta, value)
     if not value then return end
     local plySrc = GetPlayerFromStateBagName(bagName)
     if not plySrc then return end
-    CreateThread(function()
-        local player = QBX.Players[plySrc]
-        if not player then return end
-        if player.PlayerData.metadata[meta] == value and Player(plySrc).state[meta] == value then return end
-        player.Functions.SetMetaData(meta, value)
-    end)
+    local player = QBX.Players[plySrc]
+    if not player then return end
+    if player.PlayerData.metadata[meta] == value then return end
+    player.Functions.SetMetaData(meta, value)
 end
 
+---@diagnostic disable-next-line: param-type-mismatch
 AddStateBagChangeHandler('hunger', nil, function(bagName, _, value)
     playerStateBagCheck(bagName, 'hunger', value)
 end)
 
+---@diagnostic disable-next-line: param-type-mismatch
 AddStateBagChangeHandler('thirst', nil, function(bagName, _, value)
     playerStateBagCheck(bagName, 'thirst', value)
 end)
 
+---@diagnostic disable-next-line: param-type-mismatch
 AddStateBagChangeHandler('stress', nil, function(bagName, _, value)
     playerStateBagCheck(bagName, 'stress', value)
 end)
