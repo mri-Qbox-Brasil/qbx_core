@@ -387,7 +387,6 @@ local function createCharacter(cid)
         spawnDefault()
     else
         if true then
-            print("criando apartamento")
             TriggerEvent('apartments:client:setupSpawnUI', newData)
         else
             TriggerEvent('qbx_core:client:spawnNoApartments')
