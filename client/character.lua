@@ -340,7 +340,7 @@ local function spawnLastLocation()
     }) end)
 
     local insideMeta = QBX.PlayerData.metadata.inside
-    if insideMeta.propertyId then
+    if GetResourceState('ps-housing') == 'started' and insideMeta.propertyId then
         TriggerServerEvent('ps-housing:server:enterProperty', tostring(insideMeta.propertyId))
     end
 
@@ -386,7 +386,7 @@ local function createCharacter(cid)
     if GetResourceState('qbx_spawn') == 'missing' then
         spawnDefault()
     else
-        if true then
+        if config.characters.startingApartment then
             TriggerEvent('apartments:client:setupSpawnUI', newData)
         else
             TriggerEvent('qbx_core:client:spawnNoApartments')
