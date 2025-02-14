@@ -8,6 +8,12 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
         NetworkSetFriendlyFireOption(true)
     end
 
+    NetworkEndTutorialSession()
+
+    while NetworkIsInTutorialSession() do
+        Wait(0)
+    end
+
     local motd = GetConvar('qbx:motd', '')
     if motd ~= '' then
         exports.chat:addMessage({ template = motd })
@@ -202,29 +208,24 @@ RegisterNetEvent('QBCore:Client:OnSharedUpdateMultiple', function(tableName, val
 end)
 
 -- Set vehicle props
----@param vehicle number
+---@param netId number
 ---@param props table<any, any>
-qbx.entityStateHandler('setVehicleProperties', function(vehicle, _, props)
+RegisterNetEvent('qbx_core:client:setVehicleProperties', function(netId, props)
     if not props then return end
-
-    SetTimeout(0, function()
-        local state = Entity(vehicle).state
-
-        local timeOut = GetGameTimer() + 10000
-
-        while state.setVehicleProperties do
-            if NetworkGetEntityOwner(vehicle) == cache.playerId then
-                if lib.setVehicleProperties(vehicle, props) then
-                    state:set('setVehicleProperties', nil, true)
-                end
+    local timeOut = GetGameTimer() + 1000
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    while true do
+        if NetworkGetEntityOwner(vehicle) == cache.playerId then
+            if lib.setVehicleProperties(vehicle, props) then
+                return
             end
-            if GetGameTimer() > timeOut then
-                break
-            end
-
-            Wait(50)
         end
-    end)
+        if GetGameTimer() > timeOut then
+            return
+        end
+
+        Wait(50)
+    end
 end)
 
 -- Clear vehicle peds
