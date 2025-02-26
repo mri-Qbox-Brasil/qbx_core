@@ -634,7 +634,7 @@ function CheckPlayerData(source, playerData)
     playerData.metadata.jobrep.trucker = playerData.metadata.jobrep.trucker or 0
     playerData.metadata.jobrep.taxi = playerData.metadata.jobrep.taxi or 0
     playerData.metadata.jobrep.hotdog = playerData.metadata.jobrep.hotdog or 0
-    playerData.metadata.callsign = playerData.metadata.callsign or 'NO CALLSIGN'
+    playerData.metadata.callsign = playerData.metadata.callsign or 'SEM CALLSIGN'
     playerData.metadata.fingerprint = playerData.metadata.fingerprint or GenerateUniqueIdentifier('FingerId')
     playerData.metadata.walletid = playerData.metadata.walletid or GenerateUniqueIdentifier('WalletId')
     playerData.metadata.criminalrecord = playerData.metadata.criminalrecord or {
@@ -661,7 +661,7 @@ function CheckPlayerData(source, playerData)
 
     local job = GetJob(playerData.job?.name) or GetJob('unemployed')
     assert(job ~= nil, 'Unemployed job not found. Does it exist in shared/jobs.lua?')
-    local jobGrade = GetJob(playerData.job?.name) and playerData.job.grade.level or 0
+    local jobGrade = GetJob(playerData.job?.name) and (type(playerData.job.grade) == 'number' and playerData.job.grade or playerData.job.grade.level) or 0
 
     playerData.job = {
         name = playerData.job?.name or 'unemployed',
