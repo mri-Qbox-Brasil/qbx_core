@@ -188,7 +188,7 @@ end
 
 ---@param citizenId? string
 local function previewPed(citizenId)
-    
+
     DoScreenFadeOut(500)
     Citizen.Wait(500)
     if not citizenId then randomPed() return end
@@ -203,7 +203,7 @@ local function previewPed(citizenId)
     else
         randomPed()
     end
-    
+
     destroyPreviewCam()
     Citizen.Wait(100)
     setupPreviewCam()
@@ -449,7 +449,7 @@ local function chooseCharacter()
                 ['Banco'] = lib.math.groupdigits(character.money.bank),
                 ['Carteira'] = lib.math.groupdigits(character.money.cash),
                 ['Emprego'] = character.job.label,
-                ['Nível de emprego'] = character.job.grade.name,
+                ['Nível de emprego'] = type(character.job.grade) ~= "table" and character.job.grade or character.job.grade.name,
                 ['Gangue'] = character.gang.label,
                 ['Patente'] = character.gang.grade.name,
                 ['Telefone'] = character.charinfo.phone
