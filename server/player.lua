@@ -587,7 +587,6 @@ function CheckPlayerData(source, playerData)
     playerData.citizenid = playerData.citizenid or GenerateUniqueIdentifier('citizenid')
     playerData.cid = playerData.charinfo?.cid or playerData.cid or 1
     playerData.money = playerData.money or {}
-    playerData.optin = playerData.optin or true
     for moneytype, startamount in pairs(config.money.moneyTypes) do
         playerData.money[moneytype] = playerData.money[moneytype] or startamount
     end
@@ -605,6 +604,7 @@ function CheckPlayerData(source, playerData)
     playerData.charinfo.cid = playerData.charinfo.cid or playerData.cid
     -- Metadata
     playerData.metadata = playerData.metadata or {}
+    playerData.metadata.optin = playerData.metadata.optin and true or false
     playerData.metadata.health = playerData.metadata.health or 200
     playerData.metadata.hunger = playerData.metadata.hunger or 100
     playerData.metadata.thirst = playerData.metadata.thirst or 100
@@ -661,7 +661,10 @@ function CheckPlayerData(source, playerData)
 
     local job = GetJob(playerData.job?.name) or GetJob('unemployed')
     assert(job ~= nil, 'Unemployed job not found. Does it exist in shared/jobs.lua?')
-    local jobGrade = GetJob(playerData.job?.name) and (type(playerData.job.grade) == 'number' and playerData.job.grade or playerData.job.grade.level) or 0
+    local jobGrade = GetJob(playerData.job?.name) and playerData.job.grade.level or 0
+    if not job.grades[jobGrade] then
+        jobGrade = 0
+    end
 
     playerData.job = {
         name = playerData.job?.name or 'unemployed',
@@ -1104,6 +1107,8 @@ function SetPlayerData(identifier, key, value)
     UpdatePlayerData(identifier)
 end
 
+exports('SetPlayerData', SetPlayerData)
+
 ---@param identifier Source | string
 function UpdatePlayerData(identifier)
     local player = type(identifier) == 'string' and (GetPlayerByCitizenId(identifier) or GetOfflinePlayer(identifier)) or GetPlayer(identifier)
@@ -1113,6 +1118,8 @@ function UpdatePlayerData(identifier)
     TriggerEvent('QBCore:Player:SetPlayerData', player.PlayerData)
     TriggerClientEvent('QBCore:Player:SetPlayerData', player.PlayerData.source, player.PlayerData)
 end
+
+exports('UpdatePlayerData', UpdatePlayerData)
 
 ---@param identifier Source | string
 ---@param metadata string
@@ -1269,7 +1276,9 @@ function AddMoney(identifier, moneyType, amount, reason)
 
     player.PlayerData.money[moneyType] += amount
 
-    if not player.Offline then
+    if player.Offline then
+        SaveOffline(player.PlayerData)
+    else
         UpdatePlayerData(identifier)
 
         local tags = amount > 100000 and config.logging.role or nil
@@ -1324,7 +1333,9 @@ function RemoveMoney(identifier, moneyType, amount, reason)
 
     player.PlayerData.money[moneyType] -= amount
 
-    if not player.Offline then
+    if player.Offline then
+        SaveOffline(player.PlayerData)
+    else
         UpdatePlayerData(identifier)
 
         local tags = amount > 100000 and config.logging.role or nil
@@ -1372,7 +1383,9 @@ function SetMoney(identifier, moneyType, amount, reason)
 
     player.PlayerData.money[moneyType] = amount
 
-    if not player.Offline then
+    if player.Offline then
+        SaveOffline(player.PlayerData)
+    else
         UpdatePlayerData(identifier)
 
         local difference = amount - oldAmount
@@ -1415,22 +1428,22 @@ exports('GetMoney', GetMoney)
 
 ---@param source Source
 ---@param citizenid string
+---@return boolean success
 function DeleteCharacter(source, citizenid)
     local license, license2 = GetPlayerIdentifierByType(source --[[@as string]], 'license'), GetPlayerIdentifierByType(source --[[@as string]], 'license2')
-    local result = storage.fetchPlayerEntity(citizenid).license
+    local result, success = storage.fetchPlayerEntity(citizenid)?.license, false
+
     if license == result or license2 == result then
-        CreateThread(function()
-            local success = storage.deletePlayer(citizenid)
-            if success then
-                logger.log({
-                    source = 'qbx_core',
-                    webhook = config.logging.webhook['joinleave'],
-                    event = 'Character Deleted',
-                    color = 'red',
-                    message = ('**%s** deleted **%s**...'):format(GetPlayerName(source), citizenid, source),
-                })
-            end
-        end)
+        success = storage.deletePlayer(citizenid)
+        if success then
+            logger.log({
+                source = 'qbx_core',
+                webhook = config.logging.webhook['joinleave'],
+                event = 'Character Deleted',
+                color = 'red',
+                message = ('**%s** deleted **%s**...'):format(GetPlayerName(source), citizenid, source),
+            })
+        end
     else
         DropPlayer(tostring(source), locale('info.exploit_dropped'))
         logger.log({
@@ -1442,7 +1455,11 @@ function DeleteCharacter(source, citizenid)
             message = ('%s has been dropped for character deleting exploit'):format(GetPlayerName(source)),
         })
     end
+
+    return success
 end
+
+lib.callback.register('qbx_core:server:deleteCharacter', DeleteCharacter)
 
 ---@param citizenid string
 function ForceDeleteCharacter(citizenid)
