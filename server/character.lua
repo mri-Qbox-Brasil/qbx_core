@@ -6,7 +6,9 @@ local starterItems = require 'config.shared'.starterItems
 ---@param license2 string
 ---@param license? string
 local function getAllowedAmountOfCharacters(license2, license)
-    return config.characters.playersNumberOfCharacters[license2] or license and config.characters.playersNumberOfCharacters[license] or config.characters.defaultNumberOfCharacters
+    local identifier = license2 or license
+    local result = MySQL.scalar.await('SELECT char_slots FROM users WHERE license = ? OR license = ? LIMIT 1', {license2, license})
+    return result or config.characters.defaultNumberOfCharacters or 1
 end
 
 ---@param source Source
@@ -26,8 +28,13 @@ local function giveStarterItems(source)
 end
 
 lib.callback.register('qbx_core:server:getCharacters', function(source)
-    local license2, license = GetPlayerIdentifierByType(source, 'license2'), GetPlayerIdentifierByType(source, 'license')
-    return storage.fetchAllPlayerEntities(license2, license), getAllowedAmountOfCharacters(license2, license)
+    local license2 = GetPlayerIdentifierByType(source, 'license2')
+    local license = GetPlayerIdentifierByType(source, 'license')
+    
+    local playerChars = storage.fetchAllPlayerEntities(license2, license)
+    local slots = getAllowedAmountOfCharacters(license2, license)
+    
+    return playerChars, slots
 end)
 
 lib.callback.register('qbx_core:server:getPreviewPedData', function(_, citizenId)
