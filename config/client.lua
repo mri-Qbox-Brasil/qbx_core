@@ -32,6 +32,10 @@ return {
     discord = {
         enabled = true, -- This will enable or disable the built in discord rich presence.
 
+        richPresence = 'Players {currentPlayers}/{maxPlayers}', -- Rich presence text. Placeholders: {id}, {charName}, {playerName}, {currentPlayers}, {maxPlayers}, {streetName}
+
+        updateInterval = 15000, -- How often (ms) to refresh rich presence. Minimum 5000; Discord throttles faster updates.
+
         appId = '', -- This is the Application ID (Replace this with you own)
 
         largeIcon = { -- To set this up, visit https://forum.cfx.re/t/how-to-updated-discord-rich-presence-custom-image/157686
@@ -56,7 +60,38 @@ return {
     },
 
     --- Only used by QB bridge
-    hasKeys = function(plate)
-        return exports.mri_Qcarkeys:HaveTemporaryKey(plate) or exports.mri_Qcarkeys:HavePermanentKey(plate)
+    hasKeys = function(plate, vehicle)
+        if GetResourceState('mri_Qcarkeys') == 'started' then
+            return exports.mri_Qcarkeys:HaveTemporaryKey(plate) or exports.mri_Qcarkeys:HavePermanentKey(plate)
+        end
+
+        return GetResourceState('qbx_vehiclekeys') ~= 'started' or exports.qbx_vehiclekeys:HasKeys(vehicle)
     end,
+
+    teleport = {
+        fadeDuration = 650, -- Screen fade duration in milliseconds when teleporting
+        groundSearchMaxZ = 850.0, -- Maximum Z height to search for ground when teleporting
+        groundSearchStartZ = 950.0, -- Starting Z height for ground search loop
+        groundSearchStep = -25.0, -- Z increment step for ground search loop
+        loadSceneRadius = 50.0, -- Radius to load the scene around the teleport destination
+        timeout = 1000, -- Timeout in milliseconds for scene loading and collision checks
+    },
+
+    getVehiclesInRadius = {
+        defaultRadius = 5, -- Default search radius when retrieving nearby vehicles
+    },
+
+    meCommand = {
+        distance = 25, -- Maximum distance at which players can see each other's /me text
+        displayTime = 5000, -- Duration in milliseconds the /me text remains visible
+    },
+
+    setVehicleProperties = {
+        timeout = 1000, -- Timeout in milliseconds when attempting to set vehicle properties
+        waitInterval = 50, -- Wait time in milliseconds between property set attempts
+    },
+
+    initVehicle = {
+        seats = {-1, 0}, -- List of seat indices to clear when initializing a vehicle
+    },
 }

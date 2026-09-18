@@ -7,6 +7,13 @@ local disableMethodOverrideWarning = GetConvar('qbx:disableoverridewarning', 'fa
 
 local createQbExport = require 'bridge.qb.shared.export-function'
 
+---@param name string
+---@param fn function
+local function registerQbFunction(name, fn)
+    functions[name] = fn
+    createQbExport(name, fn)
+end
+
 ---@deprecated use the GetEntityCoords and GetEntityHeading natives directly
 functions.GetCoords = function(entity)
     local coords = GetEntityCoords(entity)
@@ -27,22 +34,48 @@ function functions.GetPlayers()
     return sources
 end
 
+local maxConcurrentSpawns <const> = 20
+local spawnTimeoutMs <const> = 10000
+---@type table<Source, integer>
+local activeSpawns = {}
+
+---@param source Source
+local function releaseSpawn(source)
+    local count = (activeSpawns[source] or 1) - 1
+    activeSpawns[source] = count > 0 and count or nil
+end
+
 ---@deprecated use qbx.spawnVehicle from modules/lib.lua
 ---@return number?
 function functions.SpawnVehicle(source, model, coords, warp)
+    if (activeSpawns[source] or 0) >= maxConcurrentSpawns then return end
+    activeSpawns[source] = (activeSpawns[source] or 0) + 1
+
     local ped = GetPlayerPed(source)
     model = type(model) == 'string' and joaat(model) or model
     if not coords then coords = GetEntityCoords(ped) end
     local heading = coords.w and coords.w or 0.0
     local veh = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, true)
-    while not DoesEntityExist(veh) do Wait(0) end
+
+    local spawnTimeout = GetGameTimer() + spawnTimeoutMs
+    while not DoesEntityExist(veh) and GetGameTimer() < spawnTimeout do Wait(0) end
+    if not DoesEntityExist(veh) then
+        releaseSpawn(source)
+        return
+    end
+
     if warp then
-        while GetVehiclePedIsIn(ped, false) ~= veh do
+        local warpTimeout = GetGameTimer() + spawnTimeoutMs
+        while GetVehiclePedIsIn(ped, false) ~= veh and GetGameTimer() < warpTimeout do
             Wait(0)
             TaskWarpPedIntoVehicle(ped, veh, -1)
         end
     end
-    while NetworkGetEntityOwner(veh) ~= source do Wait(0) end
+
+    local ownerTimeout = GetGameTimer() + spawnTimeoutMs
+    while NetworkGetEntityOwner(veh) ~= source and GetGameTimer() < ownerTimeout do Wait(0) end
+
+    releaseSpawn(source)
     return veh
 end
 
@@ -81,20 +114,6 @@ functions.Kick = function(source, reason, setKickReason, deferrals)
         end
         if source then
             DropPlayer(source --[[@as string]], reason)
-        end
-        for _ = 0, 4 do
-            while true do
-                if source then
-                    if GetPlayerPing(source --[[@as string]]) >= 0 then
-                        break
-                    end
-                    Wait(100)
-                    CreateThread(function()
-                        DropPlayer(source --[[@as string]], reason)
-                    end)
-                end
-            end
-            Wait(5000)
         end
     end)
 end
@@ -155,8 +174,7 @@ local function AddItem(itemName, item)
     return true, 'success'
 end
 
-functions.AddItem = AddItem
-createQbExport('AddItem', AddItem)
+registerQbFunction('AddItem', AddItem)
 
 -- Single update item
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
@@ -174,8 +192,7 @@ local function UpdateItem(itemName, item)
     return true, 'success'
 end
 
-functions.UpdateItem = UpdateItem
-createQbExport('UpdateItem', UpdateItem)
+registerQbFunction('UpdateItem', UpdateItem)
 
 -- Multiple Add Items
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
@@ -211,8 +228,7 @@ local function AddItems(items)
     return true, message, nil
 end
 
-functions.AddItems = AddItems
-createQbExport('AddItems', AddItems)
+registerQbFunction('AddItems', AddItems)
 
 -- Single Remove Item
 ---@deprecated incompatible with ox_inventory. Update ox_inventory item config instead.
@@ -233,8 +249,7 @@ local function RemoveItem(itemName)
     return true, 'success'
 end
 
-functions.RemoveItem = RemoveItem
-createQbExport('RemoveItem', RemoveItem)
+registerQbFunction('RemoveItem', RemoveItem)
 
 -- Single add job function which should only be used if you planning on adding a single job
 ---@deprecated use export CreateJobs
@@ -493,8 +508,7 @@ local function SetMethod(methodName, handler)
     return true, 'success'
 end
 
-functions.SetMethod = SetMethod
-createQbExport('SetMethod', SetMethod)
+registerQbFunction('SetMethod', SetMethod)
 
 -- Add or change (a) field(s) in the QBCore table
 ---@deprecated

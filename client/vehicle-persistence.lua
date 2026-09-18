@@ -36,7 +36,10 @@ local function calculateDiff(tbl1, tbl2)
         local val1 = tbl1[key]
         local val2 = tbl2[key]
 
-        if val1 ~= val2 then
+        local bothTables = type(val1) == "table" and type(val2) == "table"
+        local equal = (bothTables and lib.table.matches(val1, val2)) or (val1 == val2)
+
+        if not equal then
             diff[key] = val2 == nil and 'deleted' or val2
             hasChanged = true
         end
@@ -96,6 +99,8 @@ lib.onCache('seat', function(newSeat)
         netId = nil
     end
 end)
+
+if not full then return end
 
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     local vehicles = lib.callback.await('qbx_core:server:getVehiclesToSpawn', 2500)
