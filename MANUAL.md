@@ -85,7 +85,7 @@ add_principal identifier.fivem:1 group.admin
 | `admin` | Whitelist de entrada quando `config.server.whitelist` está ligado (`whitelistPermission`) e prioridade na fila (`Admin Queue`) |
 | `qbadmin.join` | Permite entrar mesmo com o servidor fechado (`config.server.closed`) |
 
-Além da ACE, os comandos administrativos exigem **opt-in**: enquanto `config.server.requireOptIn` for `true`, o admin precisa rodar `/optin` na sessão antes que os comandos passem.
+Opt-in: vem **desligado** (`config.server.requireOptIn = false`), então os comandos administrativos dependem só da ACE. Se for ligado, o admin precisa rodar `/optin` na sessão antes que os comandos passem.
 
 ---
 
@@ -224,7 +224,7 @@ Todos os comandos com `group.admin` também exigem `/optin` enquanto `config.ser
 | `/ooc [mensagem]` | Qualquer jogador | Chat fora de personagem, alcance de 20 metros (admins em opt-in veem tudo e o log vai para o webhook `ooc`) |
 | `/job` | Qualquer jogador | Mostra o job atual |
 | `/gang` | Qualquer jogador | Mostra a gangue atual |
-| `/optin` | `group.admin` | Alterna o opt-in de comandos administrativos |
+| `/optin` | `group.admin` | Alterna o opt-in de comandos administrativos (só existe com `requireOptIn` ligado) |
 | `/tp [id]` ou `/tp [x] [y] [z]` | `group.admin` | Teleporta até um jogador ou para coordenadas |
 | `/tpm` | `group.admin` | Teleporta para o waypoint |
 | `/togglepvp` | `group.admin` | Liga/desliga o PvP do servidor |
