@@ -83,10 +83,6 @@ return {
 
     --- Only used by QB bridge
     hasKeys = function(plate, vehicle)
-        if GetResourceState('mri_Qcarkeys') == 'started' then
-            return exports.mri_Qcarkeys:HaveTemporaryKey(plate) or exports.mri_Qcarkeys:HavePermanentKey(plate)
-        end
-
         return GetResourceState('qbx_vehiclekeys') ~= 'started' or exports.qbx_vehiclekeys:HasKeys(vehicle)
     end,
 
