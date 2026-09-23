@@ -27,6 +27,10 @@ end
 
 lib.callback.register('qbx_core:server:getCharacters', function(source)
     local license2, license = GetPlayerIdentifierByType(source, 'license2'), GetPlayerIdentifierByType(source, 'license')
+    -- Heal any account left with a broken cid sequence (duplicates from the
+    -- pre-fix createCharacter bug, or gaps from deleted characters) before
+    -- handing the list to the client, so create-time logic can stay a simple append.
+    storage.normalizeCids(license2, license)
     return storage.fetchAllPlayerEntities(license2, license), getAllowedAmountOfCharacters(license2, license)
 end)
 
@@ -51,11 +55,72 @@ lib.callback.register('qbx_core:server:loadCharacter', function(source, citizenI
     lib.print.info(('%s (Citizen ID: %s ID: %s) has successfully loaded!'):format(GetPlayerName(source), citizenId, source))
 end)
 
+--- Validates client-supplied character info. Never trust the values the create
+--- screen sends: cap free-text length, enforce types, and reject anything that
+--- isn't a usable string so a crafted payload can't bloat the row or smuggle in
+--- non-string fields. Returns nil to refuse creation outright.
+---@param data table
+---@return table? sanitized
+local function sanitizeNewCharInfo(data)
+    local MAX_TEXT = 50
+    local MAX_BACKSTORY = 1000
+
+    local function text(value, maxLength)
+        if type(value) ~= 'string' then return nil end
+        value = value:gsub('^%s+', ''):gsub('%s+$', '')
+        if value == '' or #value > maxLength then return nil end
+        return value
+    end
+
+    local firstname = text(data.firstname, MAX_TEXT)
+    local lastname = text(data.lastname, MAX_TEXT)
+    local nationality = text(data.nationality, MAX_TEXT)
+    local birthdate = text(data.birthdate, MAX_TEXT)
+    local gender = tonumber(data.gender)
+
+    if not firstname or not lastname or not nationality or not birthdate or not gender then
+        return nil
+    end
+
+    return {
+        firstname = firstname,
+        lastname = lastname,
+        nationality = nationality,
+        birthdate = birthdate,
+        gender = math.floor(gender),
+        backstory = text(data.backstory, MAX_BACKSTORY) or 'placeholder backstory',
+    }
+end
+
+---@param existingCharacters PlayerEntity[] sorted ascending by cid (storage.fetchAllPlayerEntities orders by cid)
+---@return integer
+local function getNextCid(existingCharacters)
+    local lastCharacter = existingCharacters[#existingCharacters]
+    return (lastCharacter and lastCharacter.charinfo.cid or 0) + 1
+end
+
 ---@param data unknown
 ---@return table? newData
 lib.callback.register('qbx_core:server:createCharacter', function(source, data)
+    if type(data) ~= 'table' then return end
+
+    local license2, license = GetPlayerIdentifierByType(source, 'license2'), GetPlayerIdentifierByType(source, 'license')
+    local existingCharacters = storage.fetchAllPlayerEntities(license2, license)
+    if #existingCharacters >= getAllowedAmountOfCharacters(license2, license) then
+        return
+    end
+
+    local charinfo = sanitizeNewCharInfo(data)
+    if not charinfo then return end
+
+    -- The client sends a cid (its local slot index), but that value is never
+    -- trustworthy: sanitizeNewCharInfo() intentionally drops it, so it must be
+    -- computed server-side from the account's existing characters or every new
+    -- character silently falls back to cid 1 (see CheckPlayerData in player.lua).
+    charinfo.cid = getNextCid(existingCharacters)
+
     local newData = {}
-    newData.charinfo = data
+    newData.charinfo = charinfo
 
     local success = Login(source, nil, newData)
     if not success then return end
