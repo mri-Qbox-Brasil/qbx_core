@@ -664,7 +664,7 @@ function CheckPlayerData(source, playerData)
     playerData.metadata.jobrep.trucker = playerData.metadata.jobrep.trucker or 0
     playerData.metadata.jobrep.taxi = playerData.metadata.jobrep.taxi or 0
     playerData.metadata.jobrep.hotdog = playerData.metadata.jobrep.hotdog or 0
-    playerData.metadata.callsign = playerData.metadata.callsign or 'SEM CALLSIGN'
+    playerData.metadata.callsign = playerData.metadata.callsign or 'NO CALLSIGN'
     playerData.metadata.fingerprint = playerData.metadata.fingerprint or GenerateUniqueIdentifier('FingerId')
     playerData.metadata.walletid = playerData.metadata.walletid or GenerateUniqueIdentifier('WalletId')
     playerData.metadata.criminalrecord = playerData.metadata.criminalrecord or {

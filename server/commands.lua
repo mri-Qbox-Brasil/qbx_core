@@ -214,16 +214,6 @@ lib.addCommand('dv', {
     local pedCars = {GetVehiclePedIsIn(ped, false)}
     local radius = args[locale('command.dv.params.radius.name')]
 
-    local function isVehicleOwned(plate)
-        local count = MySQL.scalar.await('SELECT count(*) from player_vehicles WHERE plate = ?', {plate})
-        local update = MySQL.update.await("UPDATE player_vehicles SET state = ? WHERE plate = ? OR fakeplate = ?", {1, plate, plate})
-
-        if count > 0 then
-            if update > 0 then return true end
-        end
-        return true
-    end
-
     if pedCars[1] == 0 or radius then -- Only execute when player is not in a vehicle or radius is explicitly defined
         pedCars = lib.callback.await('qbx_core:client:getVehiclesInRadius', source, radius)
     else
@@ -277,10 +267,8 @@ end)
 lib.addCommand('job', {
     help = locale('command.job.help')
 }, function(source)
-    local onduty = 'Não'
     local PlayerJob = GetPlayer(source).PlayerData.job
-    if PlayerJob.onduty then onduty = 'Sim' end
-    Notify(source, locale('info.job_info', PlayerJob?.label, PlayerJob?.grade.name, onduty))
+    Notify(source, locale('info.job_info', PlayerJob?.label, PlayerJob?.grade.name, PlayerJob?.onduty))
 end)
 
 lib.addCommand('setjob', {
