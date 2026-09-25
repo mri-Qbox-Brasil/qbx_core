@@ -25,6 +25,7 @@ client_scripts {
     'client/discord.lua',
     'client/vehicle-persistence.lua',
     'bridge/qb/client/main.lua',
+    'mri/client/vehicles.lua',
 }
 
 server_scripts {
@@ -40,6 +41,7 @@ server_scripts {
     'server/character.lua',
     'server/vehicle-persistence.lua',
     'bridge/qb/server/main.lua',
+    'mri/server/vehicles.lua',
 }
 
 files {
