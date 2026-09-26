@@ -1,4 +1,5 @@
 local serverConfig = require 'config.server'.server
+local characterConfig = require 'config.server'.characters
 local loggingConfig = require 'config.server'.logging
 local serverName = require 'config.shared'.serverName
 local storage = require 'server.storage.main'
@@ -79,6 +80,7 @@ end
 local function onPlayerConnecting(name, _, deferrals)
     local src = source --[[@as string]]
     local license = GetPlayerIdentifierByType(src, 'license2') or GetPlayerIdentifierByType(src, 'license')
+    local identifiers = getIdentifiers(src)
     deferrals.defer()
 
     -- Mandatory wait
@@ -107,7 +109,6 @@ local function onPlayerConnecting(name, _, deferrals)
         deferrals.update(locale('info.fetching_user', name))
         local userId = storage.fetchUserByIdentifier(license)
         if not userId then
-            local identifiers = getIdentifiers(src)
             identifiers.username = name
 
             deferrals.update(locale('info.creating_user', name))
@@ -188,7 +189,16 @@ end)
 -- `if LocalPlayer.state.isLoggedIn then` for the client side
 -- `if Player(source).state.isLoggedIn then` for the server side
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
-    Player(source --[[@as Source]]).state:set('isLoggedIn', true, true)
+    local src = source --[[@as Source]]
+    local player = GetPlayer(src)
+    if not player or Player(src).state.isLoggedIn then return end
+    Player(src).state:set('isLoggedIn', true, true)
+
+    -- qbx_medical restores health and death/laststand together. A late callback
+    -- from core must not overwrite its resurrected ped's health.
+    if characterConfig.enableHealthInitialization ~= false and GetResourceState('qbx_medical') ~= 'started' then
+        lib.callback.await('qbx_core:client:setHealth', src, player.PlayerData.metadata.health or 200)
+    end
 end)
 
 ---@param source Source
