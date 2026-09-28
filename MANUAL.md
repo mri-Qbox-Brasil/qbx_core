@@ -510,7 +510,7 @@ RegisterNetEvent('qbx_core:client:onSetMetaData', function(key, oldValue, newVal
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function() end)
 ```
 
-`qbx_core:server:characterDeleted` é disparado só no servidor, com `TriggerEvent`, depois que um personagem é apagado com sucesso, tanto pelo jogador quanto pelo `DeleteCharacter` do admin. Escute com `AddEventHandler`, nunca `RegisterNetEvent`, e confira que o `citizenid` não existe mais em `players` antes de apagar qualquer coisa:
+`qbx_core:server:characterDeleted` é disparado só no servidor, com `TriggerEvent`, depois que um personagem é apagado com sucesso, tanto pelo jogador quanto pelo `DeleteCharacter` do admin. Escute com `AddEventHandler`, nunca `RegisterNetEvent`:
 
 ```lua
 AddEventHandler('qbx_core:server:characterDeleted', function(citizenid) end)
