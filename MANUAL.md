@@ -254,7 +254,7 @@ A tela de personagens é interna (`client/character.lua`) e usa menus do `ox_lib
 - O ped de pré-visualização aparece em uma das `characters.locations`, sorteada a cada abertura, e recebe a aparência salva via `illenium-appearance` quando o recurso existe.
 - Ao criar o personagem, os `starterItems` são entregues e os identificadores únicos (`citizenid`, telefone, conta, digital, carteira, número de série) são gerados pelas `identifierTypes`.
 - Depois de entrar com o personagem, o spawn é resolvido nesta ordem: `mri_Qspawn` (`chooseSpawn`), senão `qbx_apartments` quando `startingApartment` está ligado, senão `qbx_spawn`, senão o `defaultSpawn`.
-- Apagar o personagem remove as linhas listadas em `config.characterDataTables`.
+- Apagar o personagem remove as linhas listadas em `config.characterDataTables` e dispara `qbx_core:server:characterDeleted`. Os dados do telefone são apagados pelo `sd-phone` ao ouvir esse evento.
 - `useExternalCharacters = true` desliga toda essa tela e deixa o fluxo para outro recurso.
 
 ---
@@ -509,6 +509,14 @@ RegisterNetEvent('qbx_core:client:onGroupUpdate', function(groups) end)
 RegisterNetEvent('qbx_core:client:onSetMetaData', function(key, oldValue, newValue) end)
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function() end)
 ```
+
+`qbx_core:server:characterDeleted` é disparado só no servidor, com `TriggerEvent`, depois que um personagem é apagado com sucesso, tanto pelo jogador quanto pelo `DeleteCharacter` do admin. Escute com `AddEventHandler`, nunca `RegisterNetEvent`, e confira que o `citizenid` não existe mais em `players` antes de apagar qualquer coisa:
+
+```lua
+AddEventHandler('qbx_core:server:characterDeleted', function(citizenid) end)
+```
+
+É o caminho para um recurso limpar os próprios dados do personagem sem listar tabelas em `characterDataTables`. O `sd-phone` usa assim.
 
 ### Eventos (compatibilidade QBCore)
 
