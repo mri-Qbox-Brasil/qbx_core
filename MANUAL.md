@@ -510,7 +510,7 @@ RegisterNetEvent('qbx_core:client:onSetMetaData', function(key, oldValue, newVal
 RegisterNetEvent('qbx_core:client:playerLoggedOut', function() end)
 ```
 
-`qbx_core:server:characterDeleted` é disparado só no servidor, com `TriggerEvent`, depois que um personagem é apagado com sucesso, tanto pelo jogador quanto pelo `DeleteCharacter` do admin. Escute com `AddEventHandler`, nunca `RegisterNetEvent`:
+`qbx_core:server:characterDeleted` é disparado só no servidor, com `TriggerEvent`, de dentro do `storage.deletePlayer` quando a exclusão dá certo. Vale pra qualquer caminho: menu do core, `DeleteCharacter` do admin e telas externas que chamam o storage direto, como o `mri_Qmultichar`. Escute com `AddEventHandler`, nunca `RegisterNetEvent`:
 
 ```lua
 AddEventHandler('qbx_core:server:characterDeleted', function(citizenid) end)
