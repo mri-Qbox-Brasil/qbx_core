@@ -1508,6 +1508,7 @@ function DeleteCharacter(source, citizenid)
                 color = 'red',
                 message = ('**%s** deleted **%s**...'):format(GetPlayerName(source), citizenid, source),
             })
+            TriggerEvent('qbx_core:server:characterDeleted', citizenid)
         end
     else
         DropPlayer(tostring(source), locale('info.exploit_dropped'))
@@ -1545,6 +1546,7 @@ function ForceDeleteCharacter(citizenid)
                     color = 'red',
                     message = ('Character **%s** got deleted'):format(citizenid),
                 })
+                TriggerEvent('qbx_core:server:characterDeleted', citizenid)
             end
         end)
     end
