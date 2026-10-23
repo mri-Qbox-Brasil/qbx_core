@@ -27,6 +27,8 @@ local function notifyVehicleUpdate(model)
     changes[model] = vehicle or false
     TriggerEvent('qbx_core:server:onVehicleUpdate', model, vehicle)
     TriggerClientEvent('qbx_core:client:onVehicleUpdate', -1, model, vehicle)
+    -- qb scripts hold a copy of the core object: this tells them to fetch it again
+    TriggerEvent('QBCore:Server:UpdateObject')
 end
 
 ---Adds a vehicle, or updates the given fields of an existing one.

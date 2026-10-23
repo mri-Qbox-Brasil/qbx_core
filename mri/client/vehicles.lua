@@ -16,6 +16,8 @@ local function applyVehicle(model, vehicle)
     if vehicle then
         vehicleHashes[vehicle.hash] = vehicle
     end
+    -- qb scripts hold a copy of the core object: this tells them to fetch it again
+    TriggerEvent('QBCore:Client:UpdateObject')
 end
 
 RegisterNetEvent('qbx_core:client:onVehicleUpdate', applyVehicle)
