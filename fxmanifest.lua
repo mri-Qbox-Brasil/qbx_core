@@ -40,6 +40,7 @@ server_scripts {
     'server/loops.lua',
     'server/character.lua',
     'server/vehicle-persistence.lua',
+    'server/convert/inventory.lua',
     'bridge/qb/server/main.lua',
     'mri/server/vehicles.lua',
     'mri/server/needs.lua',
